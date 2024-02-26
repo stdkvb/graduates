@@ -1,0 +1,66 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+}
+
+body {
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 40px;
+  }
+}
+
+a {
+  color: rgba(0, 0, 0, 0.87);
+  text-decoration: none;
+}
+
+ul {
+  margin-left: 16px;
+}
+
+@media screen and (min-width: 900px) {
+  .table:not(:first-of-type) {
+    grid-template-rows: auto;
+    .table-head {
+      display: none;
+    }
+  }
+}
+
+.custom-select {
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .MuiChip-deleteIcon {
+    display: none;
+    pointer-events: none;
+  }
+
+  li.Mui-selected {
+    .MuiChip-deleteIcon {
+      display: block;
+    }
+  }
+}
+
+.hidden-text {
+  display: -webkit-box;
+  max-width: 815px;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

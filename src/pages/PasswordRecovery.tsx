@@ -79,11 +79,7 @@ const PasswordRecovery: FC<PasswordRecovery> = () => {
           value={email}
           onChange={handleEmailChange}
         />
-        {error && (
-          <Typography color="error.main" sx={{ my: 2 }}>
-            {error.message}
-          </Typography>
-        )}
+        {error && <Typography color="error.main">{error.message}</Typography>}
         <Button
           type="submit"
           fullWidth

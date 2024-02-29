@@ -1,4 +1,5 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Typography from "@mui/material/Typography";
@@ -8,11 +9,12 @@ import Box from "@mui/material/Box";
 
 interface Login {
   onLoginSubmit: (arg: object) => void;
-  errors: string[];
+  error: string[];
   message: string;
 }
 
-const Login: FC<Login> = ({ onLoginSubmit, errors }) => {
+const Login: FC<Login> = ({ onLoginSubmit, error }) => {
+  //form
   const [login, setLogin] = useState("");
   const [loginError, setLoginError] = useState(false);
 
@@ -38,9 +40,17 @@ const Login: FC<Login> = ({ onLoginSubmit, errors }) => {
   };
 
   const handleLoginSubmit = (event: any) => {
-    event.preventDefault;
+    event.preventDefault();
     onLoginSubmit({ login, password });
   };
+
+  //get params from url
+  const [urlParams, setUrlParams] = useSearchParams();
+  let urlLogin = urlParams.get("login");
+  const setLoginFromUrl = () => {
+    setLogin(urlLogin);
+  };
+  useEffect(setLoginFromUrl, []);
 
   return (
     <Box
@@ -84,13 +94,11 @@ const Login: FC<Login> = ({ onLoginSubmit, errors }) => {
         value={password}
         onChange={handlePasswordChange}
       />
-      {/* {errors.map((error, i) => {
-        return (
-          <Typography color="error.main" sx={{ my: 2 }} key={i}>
-            {error.message}
-          </Typography>
-        );
-      })} */}
+      {error && (
+        <Typography color="error.main" sx={{ my: 2 }}>
+          {error.message}
+        </Typography>
+      )}
       <Link
         sx={{ mt: 1 }}
         component={RouterLink}

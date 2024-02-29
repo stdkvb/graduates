@@ -60,13 +60,9 @@ const AuthLayout = () => {
               gap: 3,
             }}
           >
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              <Box component="img" alt="logo" src={familyLogo} />
-            </Link>
+            <Box component="img" alt="logo" src={familyLogo} />
             <Divider orientation="vertical" flexItem />
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              <Box component="img" alt="logo" src={centerLogo} />
-            </Link>
+            <Box component="img" alt="logo" src={centerLogo} />
           </Stack>
           <Outlet />
         </Box>

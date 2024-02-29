@@ -3,6 +3,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import AuthLayout from "./layouts/AuthLayout";
+import MainLayout from "./layouts/MainLayout";
 import Login from "./pages/Login";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
@@ -16,18 +17,17 @@ interface App {
 
 function App() {
   const [loading, setLoading] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [error, setError] = useState();
 
   //login submit
-  const handleLoginSubmit = (login: string, password: string) => {
-    Api.post(`auth/login`, { login, password }).then((res) => {
-      if (res.status == 200) {
+  const handleLoginSubmit = ({ login, password }) => {
+    Api.post(`auth/login`, { login, password })
+      .then((res) => {
         setLoggedIn(true);
         localStorage.setItem("token", res.data.token);
-      } else {
-      }
-    });
+      })
+      .catch((error) => setError(error.response.data));
   };
 
   return (
@@ -49,15 +49,13 @@ function App() {
           }
         />
       ) : loggedIn ? (
-        <></>
+        <Route path="/" element={<MainLayout />}></Route>
       ) : (
         <Route path="/" element={<AuthLayout />}>
           <Route
             index
             path="/"
-            element={
-              <Login onLoginSubmit={handleLoginSubmit} errors={errors} />
-            }
+            element={<Login onLoginSubmit={handleLoginSubmit} error={error} />}
           />
           <Route path="password-recovery" element={<PasswordRecovery />} />
           <Route

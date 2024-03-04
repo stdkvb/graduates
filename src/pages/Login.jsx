@@ -7,44 +7,30 @@ import TextField from "@mui/material/TextField";
 import { Button, Link } from "@mui/material";
 import Box from "@mui/material/Box";
 
+import ValidatedTextField from "../components/ValidatedTextField";
+
 const Login = ({ onLoginSubmit, error }) => {
-  //form
-  const [login, setLogin] = useState("");
-  const [loginError, setLoginError] = useState(false);
-
-  const handleLoginChange = (event) => {
-    setLogin(event.target.value);
-    if (event.target.validity.valid) {
-      setLoginError(false);
-    } else {
-      setLoginError(true);
-    }
-  };
-
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-    if (event.target.validity.valid) {
-      setPasswordError(false);
-    } else {
-      setPasswordError(true);
-    }
-  };
-
-  const handleLoginSubmit = (event) => {
-    event.preventDefault();
-    onLoginSubmit({ login, password });
-  };
-
   //get params from url
+  const [login, setLogin] = useState("");
   const [urlParams, setUrlParams] = useSearchParams();
   let urlLogin = urlParams.get("login");
   const setLoginFromUrl = () => {
     setLogin(urlLogin);
   };
   useEffect(setLoginFromUrl, []);
+
+  //form validation
+  const inputValidator = (value) => {
+    if (value.length < 1) return "Обязательное поле";
+    return false;
+  };
+
+  //form submit
+  const handleLoginSubmit = (e) => {
+    const formData = Object.fromEntries(new FormData(e.currentTarget));
+    e.preventDefault();
+    onLoginSubmit(formData);
+  };
 
   return (
     <Box
@@ -61,32 +47,19 @@ const Login = ({ onLoginSubmit, error }) => {
       <Typography variant="h4" component="h1" sx={{ mb: 6, textAlign: "left" }}>
         Авторизация
       </Typography>
-
-      <TextField
+      <ValidatedTextField
         label="Email"
-        size="medium"
-        fullWidth
-        id="login"
         name="login"
-        sx={{ mb: 2 }}
-        required
-        error={loginError}
-        helperText={loginError ? "Введите логин" : ""}
-        value={login}
-        onChange={handleLoginChange}
+        dataValue={login}
+        validator={inputValidator}
+        isEditable={true}
       />
-      <TextField
+      <ValidatedTextField
         label="Пароль"
-        size="medium"
-        fullWidth
-        id="password"
         name="password"
-        sx={{ mb: 2 }}
-        required
-        error={passwordError}
-        helperText={passwordError ? "Введите пароль" : ""}
-        value={password}
-        onChange={handlePasswordChange}
+        dataValue=""
+        validator={inputValidator}
+        isEditable={true}
       />
       {error && (
         <Typography color="error.main" sx={{ my: 2 }}>
@@ -101,13 +74,7 @@ const Login = ({ onLoginSubmit, error }) => {
       >
         Забыли пароль?
       </Link>
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3 }}
-        disabled={!(login && password)}
-      >
+      <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
         Войти
       </Button>
     </Box>

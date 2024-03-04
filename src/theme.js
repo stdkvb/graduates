@@ -32,14 +32,14 @@ let theme = createTheme({
         },
       },
     },
-    MuiFormHelperText: {
-      styleOverrides: {
-        root: {
-          position: "absolute",
-          bottom: "-22px",
-        },
-      },
-    },
+    // MuiFormHelperText: {
+    //   styleOverrides: {
+    //     root: {
+    //       position: "absolute",
+    //       bottom: "-22px",
+    //     },
+    //   },
+    // },
     MuiButton: {
       styleOverrides: { root: { height: "41px", textTransform: "uppercase" } },
       defaultProps: { variant: "contained" },

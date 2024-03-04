@@ -1,5 +1,5 @@
 import { useContext, useState, useRef } from "react";
-import { Button, Paper, Stack, Typography } from "@mui/material";
+import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
 
 import { UserContext } from "../App";
 
@@ -12,7 +12,8 @@ const PersonalData = () => {
   //current user
   const user = useContext(UserContext);
 
-  const nameValidator = (value) => {
+  //form validation
+  const textValidator = (value) => {
     if (value.length < 1) return "Обязательное поле";
     return false;
   };
@@ -33,6 +34,7 @@ const PersonalData = () => {
     return false;
   };
 
+  //form submit
   const handleSubmit = (e) => {
     const formData = Object.fromEntries(new FormData(e.currentTarget));
     e.preventDefault();
@@ -60,58 +62,68 @@ const PersonalData = () => {
       <Typography component="h2" variant="h5">
         Личные данные
       </Typography>
-      <Stack direction="row" flexWrap="wrap" gap={2}>
-        <ValidatedTextField
-          label="Имя"
-          name="name"
-          dataValue={user.name}
-          validator={nameValidator}
-          isEditable={isEditable}
-          onChange={() => {
-            setIsEdited(true);
-          }}
-        />
-        <ValidatedTextField
-          label="Фамилия"
-          name="lastName"
-          dataValue={user.lastName}
-          validator={nameValidator}
-          isEditable={isEditable}
-          onChange={() => {
-            setIsEdited(true);
-          }}
-        />
-        <ValidatedTextField
-          label="Отчество"
-          name="secondName"
-          dataValue={user.secondName}
-          validator={nameValidator}
-          isEditable={isEditable}
-          onChange={() => {
-            setIsEdited(true);
-          }}
-        />
-        <ValidatedPhoneField
-          label="Телефон"
-          name="phone"
-          dataValue={user.phone}
-          validator={phoneValidator}
-          isEditable={isEditable}
-          onChange={() => {
-            setIsEdited(true);
-          }}
-        />
-        <ValidatedTextField
-          label="Email"
-          name="email"
-          dataValue={user.email}
-          validator={emailValidator}
-          isEditable={isEditable}
-          onChange={() => {
-            setIsEdited(true);
-          }}
-        />
-      </Stack>
+      <Grid container spacing={2} maxWidth="1248px">
+        <Grid item xs={4}>
+          <ValidatedTextField
+            label="Имя"
+            name="name"
+            dataValue={user.name}
+            validator={textValidator}
+            isEditable={isEditable}
+            onChange={() => {
+              setIsEdited(true);
+            }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <ValidatedTextField
+            label="Фамилия"
+            name="lastName"
+            dataValue={user.lastName}
+            validator={textValidator}
+            isEditable={isEditable}
+            onChange={() => {
+              setIsEdited(true);
+            }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <ValidatedTextField
+            label="Отчество"
+            name="secondName"
+            dataValue={user.secondName}
+            validator={textValidator}
+            isEditable={isEditable}
+            onChange={() => {
+              setIsEdited(true);
+            }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <ValidatedPhoneField
+            label="Телефон"
+            name="phone"
+            dataValue={user.phone}
+            validator={phoneValidator}
+            isEditable={isEditable}
+            onChange={() => {
+              setIsEdited(true);
+            }}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <ValidatedTextField
+            label="Email"
+            name="email"
+            dataValue={user.email}
+            validator={emailValidator}
+            isEditable={isEditable}
+            onChange={() => {
+              setIsEdited(true);
+            }}
+          />
+        </Grid>
+      </Grid>
       {isEditable ? (
         <Button
           type="submit"

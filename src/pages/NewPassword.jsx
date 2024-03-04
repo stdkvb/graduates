@@ -62,7 +62,7 @@ const NewPassword = () => {
       .then(() => {
         navigate("/");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => console.log(error.response.data));
   };
 
   return (

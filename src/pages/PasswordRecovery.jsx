@@ -10,27 +10,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import Api from "../utils/api";
 import Popup from "../components/Popup";
 
+import ValidatedTextField from "../components/ValidatedTextField";
+
 const PasswordRecovery = () => {
   //query errors
   const [error, setError] = useState();
 
   //form
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState(false);
-
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    if (event.target.validity.valid) {
-      setEmailError(false);
-    } else {
-      setEmailError(true);
-    }
+  const emailValidator = (value) => {
+    if (!/^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(value))
+      return "Введите корректный email";
+    return false;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (e) => {
     setError();
-    event.preventDefault();
-    Api.post(`auth/recovery-pass-start`, { email })
+    const formData = Object.fromEntries(new FormData(e.currentTarget));
+    e.preventDefault();
+    Api.post(`auth/recovery-pass-start`, formData)
       .then(() => {
         setIsSuccess(true);
       })
@@ -63,27 +60,15 @@ const PasswordRecovery = () => {
         <Typography sx={{ mb: 2, textAlign: "left" }} color="text.secondary">
           Мы отправим код подтверждения вам на почту
         </Typography>
-        <TextField
+        <ValidatedTextField
           label="Email"
-          size="medium"
-          fullWidth
-          id="login"
-          name="login"
-          sx={{ mb: 2 }}
-          required
-          error={emailError}
-          helperText={emailError ? "Введите логин" : ""}
-          value={email}
-          onChange={handleEmailChange}
+          name="email"
+          dataValue=""
+          validator={emailValidator}
+          isEditable={true}
         />
         {error && <Typography color="error.main">{error.message}</Typography>}
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3 }}
-          disabled={!email}
-        >
+        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
           Отправить
         </Button>
       </Box>

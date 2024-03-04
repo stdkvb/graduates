@@ -11,7 +11,7 @@ import Profile from "./pages/Profile";
 
 import Api from "./utils/api";
 
-//current user context
+//current user
 export const UserContext = createContext(null);
 
 function App() {
@@ -33,9 +33,13 @@ function App() {
 
   //logout
   const logOut = () => {
-    setLoggedIn(false);
-    localStorage.clear();
-    navigate("/");
+    Api.get(`auth/logout`, {})
+      .then(() => {
+        setLoggedIn(false);
+        localStorage.clear();
+        navigate("/");
+      })
+      .catch((error) => console.log(error.response.data));
   };
 
   //get user info
@@ -46,7 +50,10 @@ function App() {
         setLoading(false);
         setCurrentUser(res.data.data);
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => {
+        console.log(error.response.data);
+        setLoading(false);
+      });
   };
 
   useEffect(getUserInfo, []);

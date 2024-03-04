@@ -28,7 +28,7 @@ const ValidatedPhoneField = ({
       <TextField
         size="medium"
         fullWidth
-        sx={{ mb: 2, width: "400px" }}
+        sx={{ mb: 2 }}
         required={isEditable}
         label={label}
         error={!!error}

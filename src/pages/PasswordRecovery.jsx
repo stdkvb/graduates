@@ -1,4 +1,3 @@
-import { FC } from "react";
 import { useState } from "react";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
@@ -8,12 +7,10 @@ import IconButton from "@mui/material/IconButton";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import Api from "@/utils/api";
-import Popup from "@/components/Popup";
+import Api from "../utils/api";
+import Popup from "../components/Popup";
 
-interface PasswordRecovery {}
-
-const PasswordRecovery: FC<PasswordRecovery> = () => {
+const PasswordRecovery = () => {
   //query errors
   const [error, setError] = useState();
 

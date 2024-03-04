@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
@@ -7,20 +7,14 @@ import TextField from "@mui/material/TextField";
 import { Button, Link } from "@mui/material";
 import Box from "@mui/material/Box";
 
-interface Login {
-  onLoginSubmit: (arg: object) => void;
-  error: string[];
-  message: string;
-}
-
-const Login: FC<Login> = ({ onLoginSubmit, error }) => {
+const Login = ({ onLoginSubmit, error }) => {
   //form
   const [login, setLogin] = useState("");
   const [loginError, setLoginError] = useState(false);
 
-  const handleLoginChange = (event: React.FormEvent<HTMLInputElement>) => {
-    setLogin((event.target as HTMLInputElement).value);
-    if ((event.target as HTMLInputElement).validity.valid) {
+  const handleLoginChange = (event) => {
+    setLogin(event.target.value);
+    if (event.target.validity.valid) {
       setLoginError(false);
     } else {
       setLoginError(true);
@@ -30,16 +24,16 @@ const Login: FC<Login> = ({ onLoginSubmit, error }) => {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
 
-  const handlePasswordChange = (event: React.FormEvent<HTMLInputElement>) => {
-    setPassword((event.target as HTMLInputElement).value);
-    if ((event.target as HTMLInputElement).validity.valid) {
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+    if (event.target.validity.valid) {
       setPasswordError(false);
     } else {
       setPasswordError(true);
     }
   };
 
-  const handleLoginSubmit = (event: any) => {
+  const handleLoginSubmit = (event) => {
     event.preventDefault();
     onLoginSubmit({ login, password });
   };

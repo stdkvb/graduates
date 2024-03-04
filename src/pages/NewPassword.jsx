@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { Button, Link } from "@mui/material";
 
-import Api from "@/utils/api";
+import Api from "../utils/api";
 
 const NewPassword = () => {
   //navigate after success

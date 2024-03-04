@@ -3,11 +3,9 @@ import { Container, Link, Stack, Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
-import { Emails } from "@/types";
-
-import bashkortostanLogo from "@/assets/images/bashkortostan.svg";
-import familyLogo from "@/assets/images/family.svg";
-import centerLogo from "@/assets/images/center.svg";
+import bashkortostanLogo from "../assets/images/bashkortostan.svg";
+import familyLogo from "../assets/images/family.svg";
+import centerLogo from "../assets/images/center.svg";
 
 const AuthLayout = () => {
   return (

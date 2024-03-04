@@ -23,7 +23,22 @@ let theme = createTheme({
   components: {
     MuiTextField: {
       defaultProps: { size: "small" },
-      styleOverrides: {},
+      styleOverrides: {
+        root: {
+          ".Mui-disabled": {
+            color: "rgba(0, 0, 0, 0.87) !important",
+            WebkitTextFillColor: "rgba(0, 0, 0, 0.87) !important",
+          },
+        },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          position: "absolute",
+          bottom: "-22px",
+        },
+      },
     },
     MuiButton: {
       styleOverrides: { root: { height: "41px", textTransform: "uppercase" } },

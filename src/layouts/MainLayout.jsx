@@ -21,10 +21,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import ChatIcon from "@mui/icons-material/Chat";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 
-import bashkortostanLogo from "@/assets/images/bashkortostan.svg";
-import familyLogoWhite from "@/assets/images/familyWhite.svg";
-import centerLogoWhite from "@/assets/images/centerWhite.svg";
-import ornament from "@/assets/images/ornament.svg";
+import bashkortostanLogo from "../assets/images/bashkortostan.svg";
+import familyLogoWhite from "../assets/images/familyWhite.svg";
+import centerLogoWhite from "../assets/images/centerWhite.svg";
+import ornament from "../assets/images/ornament.svg";
+
+import { UserContext } from "../App";
 
 //avatar letters
 function stringAvatar(name, lastName) {
@@ -33,8 +35,10 @@ function stringAvatar(name, lastName) {
   };
 }
 
-const MainLayout = ({ onLogout, user }) => {
-  console.log(user);
+const MainLayout = ({ onLogout }) => {
+  //current user
+  const user = useContext(UserContext);
+
   return (
     <Box sx={{ display: "flex" }}>
       <AppBar

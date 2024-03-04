@@ -11,12 +11,10 @@ import Profile from "./pages/Profile";
 
 import Api from "./utils/api";
 
-// interface App {
-//   errors: object;
-//   onLoginSubmit: (arg: object) => void;
-// }
+//current user context
+export const UserContext = createContext(null);
 
-const App: React.FC = () => {
+function App() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -74,7 +72,11 @@ const App: React.FC = () => {
       ) : loggedIn ? (
         <Route
           path="/"
-          element={<MainLayout onLogout={logOut} user={currentUser} />}
+          element={
+            <UserContext.Provider value={currentUser}>
+              <MainLayout onLogout={logOut} />
+            </UserContext.Provider>
+          }
         >
           <Route index path="/" element={<Profile />} />
         </Route>
@@ -94,6 +96,6 @@ const App: React.FC = () => {
       )}
     </Routes>
   );
-};
+}
 
 export default App;

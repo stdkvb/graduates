@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -7,21 +7,24 @@ import MainLayout from "./layouts/MainLayout";
 import Login from "./pages/Login";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
+import Profile from "./pages/Profile";
 
 import Api from "./utils/api";
 
-interface App {
-  errors: object;
-  onLoginSubmit: (arg: object) => void;
-}
+// interface App {
+//   errors: object;
+//   onLoginSubmit: (arg: object) => void;
+// }
 
-function App() {
-  const [loading, setLoading] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(true);
+const App: React.FC = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState();
+  const [currentUser, setCurrentUser] = useState({});
 
   //login submit
-  const handleLoginSubmit = ({ login, password }) => {
+  const logIn = ({ login, password }) => {
     Api.post(`auth/login`, { login, password })
       .then((res) => {
         setLoggedIn(true);
@@ -29,6 +32,26 @@ function App() {
       })
       .catch((error) => setError(error.response.data));
   };
+
+  //logout
+  const logOut = () => {
+    setLoggedIn(false);
+    localStorage.clear();
+    navigate("/");
+  };
+
+  //get user info
+  const getUserInfo = () => {
+    Api.get(`user`)
+      .then((res) => {
+        setLoggedIn(true);
+        setLoading(false);
+        setCurrentUser(res.data.data);
+      })
+      .catch((error) => setError(error.response.data));
+  };
+
+  useEffect(getUserInfo, []);
 
   return (
     <Routes>
@@ -49,13 +72,18 @@ function App() {
           }
         />
       ) : loggedIn ? (
-        <Route path="/" element={<MainLayout />}></Route>
+        <Route
+          path="/"
+          element={<MainLayout onLogout={logOut} user={currentUser} />}
+        >
+          <Route index path="/" element={<Profile />} />
+        </Route>
       ) : (
         <Route path="/" element={<AuthLayout />}>
           <Route
             index
             path="/"
-            element={<Login onLoginSubmit={handleLoginSubmit} error={error} />}
+            element={<Login onLoginSubmit={logIn} error={error} />}
           />
           <Route path="password-recovery" element={<PasswordRecovery />} />
           <Route
@@ -66,6 +94,6 @@ function App() {
       )}
     </Routes>
   );
-}
+};
 
 export default App;

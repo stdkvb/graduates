@@ -90,9 +90,7 @@ const AuthLayout = () => {
           }}
         >
           <Typography>Техническая поддержка:</Typography>
-          <Link href={`mailto:${Emails.SUPPORT_EMAIL}`}>
-            {Emails.SUPPORT_EMAIL}
-          </Link>
+          <Link href="mailto:info@example.ru">info@example.ru</Link>
         </Box>
 
         <Box sx={{ display: "flex", gap: 1 }}>

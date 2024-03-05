@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
+import Help from "./pages/Help";
 
 import Api from "./utils/api";
 import { UserContext } from "./utils/context";
@@ -76,7 +77,8 @@ function App() {
         />
       ) : loggedIn ? (
         <Route path="/" element={<MainLayout onLogout={logOut} />}>
-          <Route index path="/" element={<Profile />} />
+          <Route index path="profile" element={<Profile />} />
+          <Route path="help" element={<Help />} />
         </Route>
       ) : (
         <Route path="/" element={<AuthLayout />}>

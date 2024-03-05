@@ -6,8 +6,8 @@ const TextInput = ({
   label,
   defaultValue,
   validator,
-  onChange,
   isEditable,
+  multiline,
 }) => {
   const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
@@ -16,7 +16,6 @@ const TextInput = ({
     const errorMessage = validator(newValue);
     setValue(newValue);
     setError(errorMessage);
-    onChange(!errorMessage);
   };
   return (
     <TextField
@@ -30,6 +29,8 @@ const TextInput = ({
       error={!!error}
       helperText={error}
       disabled={!isEditable}
+      multiline={multiline}
+      minRows={4}
       InputLabelProps={{ shrink: true }}
     />
   );

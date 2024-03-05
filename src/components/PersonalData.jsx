@@ -18,7 +18,6 @@ const PersonalData = () => {
 
   //edit personal data
   const [isEditable, setIsEditable] = useState(false);
-  const [isEdited, setIsEdited] = useState(false);
 
   //form validation
   const textValidator = (value) => {
@@ -82,9 +81,6 @@ const PersonalData = () => {
               defaultValue={user.name}
               validator={textValidator}
               isEditable={isEditable}
-              onChange={() => {
-                setIsEdited(true);
-              }}
             />
           </Grid>
           <Grid item xs={4}>
@@ -94,9 +90,6 @@ const PersonalData = () => {
               defaultValue={user.lastName}
               validator={textValidator}
               isEditable={isEditable}
-              onChange={() => {
-                setIsEdited(true);
-              }}
             />
           </Grid>
           <Grid item xs={4}>
@@ -106,9 +99,6 @@ const PersonalData = () => {
               defaultValue={user.secondName}
               validator={textValidator}
               isEditable={isEditable}
-              onChange={() => {
-                setIsEdited(true);
-              }}
             />
           </Grid>
           <Grid item xs={4}>
@@ -118,9 +108,6 @@ const PersonalData = () => {
               defaultValue={user.phone}
               validator={phoneValidator}
               isEditable={isEditable}
-              onChange={() => {
-                setIsEdited(true);
-              }}
             />
           </Grid>
           <Grid item xs={4}>
@@ -130,19 +117,11 @@ const PersonalData = () => {
               defaultValue={user.email}
               validator={emailValidator}
               isEditable={isEditable}
-              onChange={() => {
-                setIsEdited(true);
-              }}
             />
           </Grid>
         </Grid>
         {isEditable ? (
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ width: "400px" }}
-            disabled={!isEdited}
-          >
+          <Button type="submit" variant="contained" sx={{ width: "400px" }}>
             Сохранить
           </Button>
         ) : (

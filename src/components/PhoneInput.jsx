@@ -2,13 +2,7 @@ import React, { useState } from "react";
 import { TextField } from "@mui/material";
 import InputMask from "react-input-mask";
 
-const PhoneInput = ({
-  label,
-  defaultValue,
-  validator,
-  onChange,
-  isEditable,
-}) => {
+const PhoneInput = ({ name, label, defaultValue, validator, isEditable }) => {
   const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
   const handleChange = (e) => {
@@ -16,7 +10,6 @@ const PhoneInput = ({
     const errorMessage = validator(newValue);
     setValue(newValue);
     setError(errorMessage);
-    onChange(!errorMessage);
   };
   return (
     <InputMask
@@ -26,6 +19,7 @@ const PhoneInput = ({
       disabled={!isEditable}
     >
       <TextField
+        name={name}
         size="medium"
         fullWidth
         required={isEditable}

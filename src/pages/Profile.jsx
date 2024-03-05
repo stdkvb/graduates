@@ -1,6 +1,5 @@
 import { Link as RouterLink } from "react-router-dom";
 import { Container, Paper, Stack, Typography, Button } from "@mui/material";
-import TextField from "@mui/material/TextField";
 
 import PersonalData from "../components/PersonalData";
 import ChangePassword from "../components/ChangePassword";
@@ -29,12 +28,12 @@ const Profile = () => {
         <Typography component="h2" variant="h5">
           Есть вопросы?
         </Typography>
-        <Typography>
+        <Typography color="text.secondary">
           Заполните форму и наш администратор свяжется с вами
         </Typography>
         <Button
           component={RouterLink}
-          to="/questions"
+          to="/help"
           variant="contained"
           sx={{ width: "400px" }}
         >

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, Link as RouterLink } from "react-router-dom";
 import { Avatar, Box, Stack, Divider, Button } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
@@ -88,7 +88,7 @@ const MainLayout = ({ onLogout }) => {
         >
           <List>
             <ListItem disablePadding>
-              <ListItemButton>
+              <ListItemButton component={RouterLink} to="/profile">
                 <ListItemIcon>
                   <Avatar
                     {...stringAvatar(`${user.name}`, `${user.lastName}`)}
@@ -156,7 +156,12 @@ const MainLayout = ({ onLogout }) => {
               </Accordion>
             </ListItem>
             <ListItem>
-              <Button variant="contained" fullWidth>
+              <Button
+                variant="contained"
+                fullWidth
+                component={RouterLink}
+                to="/help"
+              >
                 Задать вопрос
               </Button>
             </ListItem>

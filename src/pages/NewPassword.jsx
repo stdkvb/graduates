@@ -118,13 +118,7 @@ const NewPassword = () => {
           {error.message}
         </Typography>
       )}
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3 }}
-        disabled={!password || passwordError || confirmPasswordError}
-      >
+      <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
         Восстановить пароль
       </Button>
     </Box>

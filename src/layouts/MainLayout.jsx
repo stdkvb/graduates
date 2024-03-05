@@ -22,9 +22,10 @@ import ChatIcon from "@mui/icons-material/Chat";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
 
 import bashkortostanLogo from "../assets/images/bashkortostan.svg";
-import familyLogoWhite from "../assets/images/familyWhite.svg";
-import centerLogoWhite from "../assets/images/centerWhite.svg";
+
 import ornament from "../assets/images/ornament.svg";
+
+import Header from "../components/Header";
 
 import { UserContext } from "../utils/context";
 
@@ -41,28 +42,7 @@ const MainLayout = ({ onLogout }) => {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBar
-        position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-        }}
-      >
-        <Toolbar
-          sx={{
-            display: "flex",
-            gap: 3,
-            py: 1,
-          }}
-        >
-          <Box component="img" alt="logo" src={familyLogoWhite} />
-          <Divider
-            orientation="vertical"
-            flexItem
-            sx={{ borderColor: "white", opacity: "0.2" }}
-          />
-          <Box component="img" alt="logo" src={centerLogoWhite} />
-        </Toolbar>
-      </AppBar>
+      <Header />
       <Drawer
         variant="permanent"
         sx={{

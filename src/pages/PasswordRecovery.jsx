@@ -48,16 +48,13 @@ const PasswordRecovery = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
+          gap: 2,
         }}
       >
-        <Typography
-          variant="h4"
-          component="h1"
-          sx={{ mb: 1, textAlign: "left" }}
-        >
+        <Typography variant="h4" component="h1" sx={{ textAlign: "left" }}>
           Забыли пароль
         </Typography>
-        <Typography sx={{ mb: 2, textAlign: "left" }} color="text.secondary">
+        <Typography sx={{ mb: 1, textAlign: "left" }} color="text.secondary">
           Мы отправим код подтверждения вам на почту
         </Typography>
         <TextInput

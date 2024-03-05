@@ -41,10 +41,11 @@ const Login = ({ onLoginSubmit, error }) => {
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        alignItems: { xs: "center", md: "flex-start" },
+        alignItems: "flex-start",
+        gap: 2,
       }}
     >
-      <Typography variant="h4" component="h1" sx={{ mb: 6, textAlign: "left" }}>
+      <Typography variant="h4" component="h1" sx={{ mb: 4, textAlign: "left" }}>
         Авторизация
       </Typography>
       <TextInput
@@ -61,17 +62,8 @@ const Login = ({ onLoginSubmit, error }) => {
         validator={inputValidator}
         isEditable={true}
       />
-      {error && (
-        <Typography color="error.main" sx={{ my: 2 }}>
-          {error.message}
-        </Typography>
-      )}
-      <Link
-        sx={{ mt: 1 }}
-        component={RouterLink}
-        to="/password-recovery"
-        color="primary.main"
-      >
+      {error && <Typography color="error.main">{error.message}</Typography>}
+      <Link component={RouterLink} to="/password-recovery" color="primary.main">
         Забыли пароль?
       </Link>
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>

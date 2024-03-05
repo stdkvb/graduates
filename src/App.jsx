@@ -9,6 +9,7 @@ import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
 import Help from "./pages/Help";
+import PageNotFound from "./pages/PageNotFound";
 
 import Api from "./utils/api";
 import { UserContext } from "./utils/context";
@@ -94,6 +95,7 @@ function App() {
           />
         </Route>
       )}
+      <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
     </Routes>
   );
 }

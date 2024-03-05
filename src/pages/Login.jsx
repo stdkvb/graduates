@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import { Button, Link } from "@mui/material";
 import Box from "@mui/material/Box";
 
-import ValidatedTextField from "../components/ValidatedTextField";
+import TextInput from "../components/TextInput";
 
 const Login = ({ onLoginSubmit, error }) => {
   //get params from url
@@ -47,17 +47,17 @@ const Login = ({ onLoginSubmit, error }) => {
       <Typography variant="h4" component="h1" sx={{ mb: 6, textAlign: "left" }}>
         Авторизация
       </Typography>
-      <ValidatedTextField
+      <TextInput
         label="Email"
         name="login"
-        dataValue={login}
+        defaultValue={login}
         validator={inputValidator}
         isEditable={true}
       />
-      <ValidatedTextField
+      <TextInput
         label="Пароль"
         name="password"
-        dataValue=""
+        defaultValue=""
         validator={inputValidator}
         isEditable={true}
       />

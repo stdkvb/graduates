@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { TextField } from "@mui/material";
+import InputMask from "react-input-mask";
 
-const ValidatedTextField = ({
-  name,
+const PhoneInput = ({
   label,
-  dataValue,
+  defaultValue,
   validator,
   onChange,
   isEditable,
 }) => {
-  const [value, setValue] = useState(dataValue);
+  const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
   const handleChange = (e) => {
     const newValue = e.target.value;
@@ -19,20 +19,23 @@ const ValidatedTextField = ({
     onChange(!errorMessage);
   };
   return (
-    <TextField
-      name={name}
-      size="medium"
-      fullWidth
-      sx={{ mb: 2 }}
-      required={isEditable}
-      label={label}
+    <InputMask
+      mask="+7 (999) 999-99-99"
       value={value}
       onChange={handleChange}
-      error={!!error}
-      helperText={error}
       disabled={!isEditable}
-    />
+    >
+      <TextField
+        size="medium"
+        fullWidth
+        required={isEditable}
+        label={label}
+        error={!!error}
+        helperText={error}
+        InputLabelProps={{ shrink: true }}
+      />
+    </InputMask>
   );
 };
 
-export default ValidatedTextField;
+export default PhoneInput;

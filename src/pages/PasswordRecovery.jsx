@@ -10,7 +10,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Api from "../utils/api";
 import Popup from "../components/Popup";
 
-import ValidatedTextField from "../components/ValidatedTextField";
+import TextInput from "../components/TextInput";
 
 const PasswordRecovery = () => {
   //query errors
@@ -60,10 +60,10 @@ const PasswordRecovery = () => {
         <Typography sx={{ mb: 2, textAlign: "left" }} color="text.secondary">
           Мы отправим код подтверждения вам на почту
         </Typography>
-        <ValidatedTextField
+        <TextInput
           label="Email"
           name="email"
-          dataValue=""
+          defaultValue=""
           validator={emailValidator}
           isEditable={true}
         />

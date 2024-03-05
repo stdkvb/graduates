@@ -26,7 +26,7 @@ import familyLogoWhite from "../assets/images/familyWhite.svg";
 import centerLogoWhite from "../assets/images/centerWhite.svg";
 import ornament from "../assets/images/ornament.svg";
 
-import { UserContext } from "../App";
+import { UserContext } from "../utils/context";
 
 //avatar letters
 function stringAvatar(name, lastName) {
@@ -37,7 +37,7 @@ function stringAvatar(name, lastName) {
 
 const MainLayout = ({ onLogout }) => {
   //current user
-  const user = useContext(UserContext);
+  const user = useContext(UserContext).user;
 
   return (
     <Box sx={{ display: "flex" }}>

@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -10,16 +10,14 @@ import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
 
 import Api from "./utils/api";
-
-//current user
-export const UserContext = createContext(null);
+import { UserContext } from "./utils/context";
 
 function App() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState();
-  const [currentUser, setCurrentUser] = useState({});
+  const { user, setUser } = useContext(UserContext);
 
   //login submit
   const logIn = ({ login, password }) => {
@@ -46,9 +44,9 @@ function App() {
   const getUserInfo = () => {
     Api.get(`user`)
       .then((res) => {
+        setUser(res.data.data);
         setLoggedIn(true);
         setLoading(false);
-        setCurrentUser(res.data.data);
       })
       .catch((error) => {
         console.log(error.response.data);
@@ -77,14 +75,7 @@ function App() {
           }
         />
       ) : loggedIn ? (
-        <Route
-          path="/"
-          element={
-            <UserContext.Provider value={currentUser}>
-              <MainLayout onLogout={logOut} />
-            </UserContext.Provider>
-          }
-        >
+        <Route path="/" element={<MainLayout onLogout={logOut} />}>
           <Route index path="/" element={<Profile />} />
         </Route>
       ) : (

@@ -5,9 +5,18 @@ import { useState, useEffect } from "react";
 const PasswordInput = ({ label, name, validator }) => {
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
+
+  //default validator
+  const defaultValidator = (value) => {
+    if (value.length < 1) return "Обязательное поле";
+    return false;
+  };
+
   const handleChange = (e) => {
     const newValue = e.target.value;
-    const errorMessage = validator(newValue);
+    const errorMessage = validator
+      ? validator(newValue)
+      : defaultValidator(newValue);
     setValue(newValue);
     setError(errorMessage);
   };

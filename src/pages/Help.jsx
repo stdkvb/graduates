@@ -23,28 +23,6 @@ const Help = () => {
   //current user
   const { user } = useContext(UserContext);
 
-  //form validation
-  const textValidator = (value) => {
-    if (value.length < 1) return "Обязательное поле";
-    return false;
-  };
-
-  const phoneValidator = (value) => {
-    if (
-      !/^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
-        value
-      )
-    )
-      return "Введите корректный номер телефона";
-    return false;
-  };
-
-  const emailValidator = (value) => {
-    if (!/^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(value))
-      return "Введите корректный email";
-    return false;
-  };
-
   //form submit
   const handleSubmit = (e) => {
     const formData = Object.fromEntries(new FormData(e.currentTarget));
@@ -93,8 +71,7 @@ const Help = () => {
                 label="Имя"
                 name="name"
                 defaultValue={`${user.lastName} ${user.name} ${user.secondName}`}
-                validator={textValidator}
-                isEditable={true}
+                required={true}
               />
             </Grid>
             <Grid item xs={4}>
@@ -102,8 +79,6 @@ const Help = () => {
                 label="Телефон"
                 name="phone"
                 defaultValue={user.phone}
-                validator={phoneValidator}
-                isEditable={true}
               />
             </Grid>
             <Grid item xs={4}>
@@ -111,17 +86,14 @@ const Help = () => {
                 label="Email"
                 name="email"
                 defaultValue={user.email}
-                validator={emailValidator}
-                isEditable={true}
+                required={true}
               />
             </Grid>
             <Grid item xs={12}>
               <TextInput
                 label="Введите ваш вопрос"
                 name="text"
-                defaultValue=""
-                validator={textValidator}
-                isEditable={true}
+                required={true}
                 multiline={true}
               />
             </Grid>

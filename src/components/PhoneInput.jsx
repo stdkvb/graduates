@@ -2,12 +2,23 @@ import React, { useState } from "react";
 import { TextField } from "@mui/material";
 import InputMask from "react-input-mask";
 
-const PhoneInput = ({ name, label, defaultValue, validator, isEditable }) => {
+const PhoneInput = ({ name, label, defaultValue, onlyRead, required }) => {
   const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
+
+  const phoneValidator = (value) => {
+    if (
+      !/^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
+        value
+      )
+    )
+      return "Введите корректный номер телефона";
+    return false;
+  };
+
   const handleChange = (e) => {
     const newValue = e.target.value;
-    const errorMessage = validator(newValue);
+    const errorMessage = phoneValidator(newValue);
     setValue(newValue);
     setError(errorMessage);
   };
@@ -16,13 +27,13 @@ const PhoneInput = ({ name, label, defaultValue, validator, isEditable }) => {
       mask="+7 (999) 999-99-99"
       value={value}
       onChange={handleChange}
-      disabled={!isEditable}
+      disabled={onlyRead}
     >
       <TextField
         name={name}
         size="medium"
         fullWidth
-        required={isEditable}
+        required={onlyRead ? false : required}
         label={label}
         error={!!error}
         helperText={error}

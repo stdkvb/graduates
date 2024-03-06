@@ -16,13 +16,6 @@ const PasswordRecovery = () => {
   //query errors
   const [error, setError] = useState();
 
-  //form
-  const emailValidator = (value) => {
-    if (!/^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(value))
-      return "Введите корректный email";
-    return false;
-  };
-
   const handleSubmit = (e) => {
     setError();
     const formData = Object.fromEntries(new FormData(e.currentTarget));
@@ -57,13 +50,7 @@ const PasswordRecovery = () => {
         <Typography sx={{ mb: 1, textAlign: "left" }} color="text.secondary">
           Мы отправим код подтверждения вам на почту
         </Typography>
-        <TextInput
-          label="Email"
-          name="email"
-          defaultValue=""
-          validator={emailValidator}
-          isEditable={true}
-        />
+        <TextInput label="Email" name="email" required={true} />
         {error && <Typography color="error.main">{error.message}</Typography>}
         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
           Отправить

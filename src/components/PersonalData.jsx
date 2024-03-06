@@ -17,29 +17,9 @@ const PersonalData = () => {
   const { user, setUser } = useContext(UserContext);
 
   //edit personal data
-  const [isEditable, setIsEditable] = useState(false);
+  const [onlyRead, setOnlyRead] = useState(true);
 
   //form validation
-  const textValidator = (value) => {
-    if (value.length < 1) return "Обязательное поле";
-    return false;
-  };
-
-  const phoneValidator = (value) => {
-    if (
-      !/^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
-        value
-      )
-    )
-      return "Введите корректный номер телефона";
-    return false;
-  };
-
-  const emailValidator = (value) => {
-    if (!/^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(value))
-      return "Введите корректный email";
-    return false;
-  };
 
   //form submit
   const handleSubmit = (e) => {
@@ -48,7 +28,7 @@ const PersonalData = () => {
     if (e.target.checkValidity()) {
       Api.post(`user/change`, formData)
         .then(() => {
-          setIsEditable(false);
+          setOnlyRead(true);
           setIsSuccess(true);
           setUser(formData);
         })
@@ -79,8 +59,8 @@ const PersonalData = () => {
               label="Имя"
               name="name"
               defaultValue={user.name}
-              validator={textValidator}
-              isEditable={isEditable}
+              required={true}
+              onlyRead={onlyRead}
             />
           </Grid>
           <Grid item xs={4}>
@@ -88,8 +68,8 @@ const PersonalData = () => {
               label="Фамилия"
               name="lastName"
               defaultValue={user.lastName}
-              validator={textValidator}
-              isEditable={isEditable}
+              required={true}
+              onlyRead={onlyRead}
             />
           </Grid>
           <Grid item xs={4}>
@@ -97,8 +77,8 @@ const PersonalData = () => {
               label="Отчество"
               name="secondName"
               defaultValue={user.secondName}
-              validator={textValidator}
-              isEditable={isEditable}
+              required={true}
+              onlyRead={onlyRead}
             />
           </Grid>
           <Grid item xs={4}>
@@ -106,8 +86,8 @@ const PersonalData = () => {
               label="Телефон"
               name="phone"
               defaultValue={user.phone}
-              validator={phoneValidator}
-              isEditable={isEditable}
+              required={true}
+              onlyRead={onlyRead}
             />
           </Grid>
           <Grid item xs={4}>
@@ -115,12 +95,12 @@ const PersonalData = () => {
               label="Email"
               name="email"
               defaultValue={user.email}
-              validator={emailValidator}
-              isEditable={isEditable}
+              required={true}
+              onlyRead={onlyRead}
             />
           </Grid>
         </Grid>
-        {isEditable ? (
+        {!onlyRead ? (
           <Button type="submit" variant="contained" sx={{ width: "400px" }}>
             Сохранить
           </Button>
@@ -130,7 +110,7 @@ const PersonalData = () => {
             sx={{ width: "400px" }}
             onClick={(e) => {
               e.preventDefault();
-              setIsEditable(true);
+              setOnlyRead(false);
             }}
           >
             Редактировать

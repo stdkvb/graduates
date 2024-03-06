@@ -8,6 +8,7 @@ import { Button, Link } from "@mui/material";
 import Box from "@mui/material/Box";
 
 import TextInput from "../components/TextInput";
+import PasswordInput from "../components/PasswordInput";
 
 const Login = ({ onLoginSubmit, error }) => {
   //get params from url
@@ -18,12 +19,6 @@ const Login = ({ onLoginSubmit, error }) => {
     setLogin(urlLogin);
   };
   useEffect(setLoginFromUrl, []);
-
-  //form validation
-  const inputValidator = (value) => {
-    if (value.length < 1) return "Обязательное поле";
-    return false;
-  };
 
   //form submit
   const handleLoginSubmit = (e) => {
@@ -52,16 +47,9 @@ const Login = ({ onLoginSubmit, error }) => {
         label="Email"
         name="login"
         defaultValue={login}
-        validator={inputValidator}
-        isEditable={true}
+        required={true}
       />
-      <TextInput
-        label="Пароль"
-        name="password"
-        defaultValue=""
-        validator={inputValidator}
-        isEditable={true}
-      />
+      <PasswordInput label="Пароль" name="password" />
       {error && <Typography color="error.main">{error.message}</Typography>}
       <Link component={RouterLink} to="/password-recovery" color="primary.main">
         Забыли пароль?

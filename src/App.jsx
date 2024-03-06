@@ -9,6 +9,7 @@ import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
 import Help from "./pages/Help";
+import CreateForm from "./pages/CreateForm";
 import PageNotFound from "./pages/PageNotFound";
 
 import Api from "./utils/api";
@@ -77,25 +78,31 @@ function App() {
           }
         />
       ) : loggedIn ? (
-        <Route path="/" element={<MainLayout onLogout={logOut} />}>
-          <Route index path="profile" element={<Profile />} />
-          <Route path="help" element={<Help />} />
+        <Route path="/">
+          <Route path="/" element={<MainLayout onLogout={logOut} />}>
+            <Route index path="profile" element={<Profile />} />
+            <Route path="help" element={<Help />} />
+            <Route path="questionnaire/create" element={<CreateForm />} />
+          </Route>
+          <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
         </Route>
       ) : (
-        <Route path="/" element={<AuthLayout />}>
-          <Route
-            index
-            path="/"
-            element={<Login onLoginSubmit={logIn} error={error} />}
-          />
-          <Route path="password-recovery" element={<PasswordRecovery />} />
-          <Route
-            path="check/password-recovery-code"
-            element={<NewPassword />}
-          />
+        <Route path="/">
+          <Route path="/" element={<AuthLayout />}>
+            <Route
+              index
+              path="/"
+              element={<Login onLoginSubmit={logIn} error={error} />}
+            />
+            <Route path="password-recovery" element={<PasswordRecovery />} />
+            <Route
+              path="check/password-recovery-code"
+              element={<NewPassword />}
+            />
+          </Route>
+          <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
         </Route>
       )}
-      <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
     </Routes>
   );
 }

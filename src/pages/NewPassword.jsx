@@ -8,6 +8,8 @@ import { Button, Link } from "@mui/material";
 
 import Api from "../utils/api";
 
+import PasswordInput from "../components/PasswordInput";
+
 const NewPassword = () => {
   //navigate after success
   const navigate = useNavigate();
@@ -21,48 +23,42 @@ const NewPassword = () => {
   const checkCode = () => {
     Api.post(`auth/recovery-pass-check-code`, { userId, passwordRecoveryCode })
       .then(() => {})
-      .catch((error) => setError(error.response.data));
+      .catch((error) => setError(error.response.data.message));
   };
 
   useEffect(checkCode, []);
 
   //query errors
-  const [error, setError] = useState();
+  const [error, setError] = useState(null);
 
-  //form
-  const [password, setPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
-  const passwordValidator = (e) => {
-    setPassword(e.target.value);
-    if (e.target.value.length < 6) {
-      setPasswordError(true);
-    } else {
-      setPasswordError(false);
-    }
+  //form validation
+  const passwordValidator = (value) => {
+    if (value.length < 6) return "Пароль должен содержать не менее 6 символов";
+    return false;
   };
 
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [confirmPasswordError, setConfirmPasswordErrorError] = useState(false);
-  const confirmPasswordValidator = (e) => {
-    setConfirmPassword(e.target.value);
-    if (e.target.value !== password) {
-      setConfirmPasswordErrorError(true);
+  //form submit
+  const handleSubmit = (e) => {
+    const formData = Object.fromEntries(new FormData(e.currentTarget));
+    Object.assign(formData, {
+      userId: userId,
+      passwordRecoveryCode: passwordRecoveryCode,
+    });
+    e.preventDefault();
+    if (e.target.checkValidity()) {
+      if (formData.password !== formData.confirmPassword) {
+        setError("Введеные пароли не совпадают");
+      } else {
+        Api.post(`auth/recovery-pass-finish`, formData)
+          .then(() => {
+            setError(null);
+            navigate("/");
+          })
+          .catch((error) => setError(error.response.data.message));
+      }
     } else {
-      setConfirmPasswordErrorError(false);
+      alert("Заполните обязательные поля");
     }
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    Api.post(`auth/recovery-pass-finish`, {
-      userId,
-      passwordRecoveryCode,
-      password,
-    })
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => console.log(error.response.data));
   };
 
   return (
@@ -74,50 +70,27 @@ const NewPassword = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
+        gap: 2,
       }}
     >
       <Typography
         variant="h4"
         component="h1"
-        sx={{ mb: 2, textAlign: { xs: "center", md: "left" } }}
+        sx={{ mb: 4, textAlign: { xs: "center", md: "left" } }}
       >
         Сменить пароль
       </Typography>
-      <TextField
+      <PasswordInput
         label="Новый пароль"
-        variant="standard"
-        size="medium"
-        required
-        fullWidth
-        id="password"
         name="password"
-        error={passwordError}
-        helperText={
-          passwordError ? "Пароль должен содержать минимум 6 символов" : ""
-        }
-        value={password}
-        onChange={passwordValidator}
-        sx={{ mb: 2 }}
+        validator={passwordValidator}
       />
-      <TextField
+      <PasswordInput
         label="Повторите пароль"
-        variant="standard"
-        size="medium"
-        required
-        fullWidth
-        id="confirmPassword"
         name="confirmPassword"
-        error={confirmPasswordError}
-        helperText={confirmPasswordError ? "Введенные пароли не совпадают" : ""}
-        value={confirmPassword}
-        onChange={confirmPasswordValidator}
-        sx={{ mb: 2 }}
+        validator={passwordValidator}
       />
-      {error && (
-        <Typography color="error.main" sx={{ my: 2 }}>
-          {error.message}
-        </Typography>
-      )}
+      {error && <Typography color="error.main">{error}</Typography>}
       <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
         Восстановить пароль
       </Button>

@@ -6,29 +6,49 @@ const TextInput = ({
   label,
   defaultValue,
   validator,
-  isEditable,
+  onlyRead,
   multiline,
+  required,
 }) => {
-  const [value, setValue] = useState(defaultValue);
+  const [value, setValue] = useState(defaultValue ? defaultValue : "");
   const [error, setError] = useState(false);
+
+  //default validator
+  const defaultValidator = (value) => {
+    if (value.length < 1) return "Обязательное поле";
+    return false;
+  };
+
+  //email validator
+  const emailValidator = (value) => {
+    if (!/^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(value))
+      return "Введите корректный email";
+    return false;
+  };
+
   const handleChange = (e) => {
     const newValue = e.target.value;
-    const errorMessage = validator(newValue);
+    const errorMessage = validator
+      ? validator(newValue)
+      : name == "email"
+      ? emailValidator(newValue)
+      : defaultValidator(newValue);
     setValue(newValue);
     setError(errorMessage);
   };
+
   return (
     <TextField
       name={name}
       size="medium"
       fullWidth
-      required={isEditable}
+      required={onlyRead ? false : required}
       label={label}
       value={value}
       onChange={handleChange}
       error={!!error}
       helperText={error}
-      disabled={!isEditable}
+      disabled={onlyRead}
       multiline={multiline}
       minRows={4}
       InputLabelProps={{ shrink: true }}

@@ -14,11 +14,6 @@ const ChangePassword = () => {
   const [error, setError] = useState();
 
   //form validation
-  const currentPasswordValidator = (value) => {
-    if (value.length < 1) return "Обязательное поле";
-    return false;
-  };
-
   const passwordValidator = (value) => {
     if (value.length < 6) return "Пароль должен содержать не менее 6 символов";
     return false;
@@ -61,11 +56,7 @@ const ChangePassword = () => {
         </Typography>
         <Grid container spacing={2} rowSpacing={4} maxWidth="1248px">
           <Grid item xs={4}>
-            <PasswordInput
-              label="Текущий пароль"
-              name="oldPassword"
-              validator={currentPasswordValidator}
-            />
+            <PasswordInput label="Текущий пароль" name="oldPassword" />
           </Grid>
           <Grid item xs={4}>
             <PasswordInput

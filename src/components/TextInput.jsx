@@ -32,7 +32,9 @@ const TextInput = ({
       ? validator(newValue)
       : name == "email"
       ? emailValidator(newValue)
-      : defaultValidator(newValue);
+      : required
+      ? defaultValidator(newValue)
+      : null;
     setValue(newValue);
     setError(errorMessage);
   };

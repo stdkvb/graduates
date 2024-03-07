@@ -12,28 +12,38 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import TextInput from "../components/TextInput";
-import PhoneInput from "../components/PhoneInput";
-import Select from "../components/Select";
-import DateInput from "../components/DateInput";
+import Questionnaire from "../components/Questionnaire";
 import Popup from "../components/Popup";
 
 import Api from "../utils/api";
 
 const CreateForm = () => {
   const [loading, setLoading] = useState(true);
-  const [formProperties, setFormProperties] = useState();
+  const [error, setError] = useState();
+  const [questionnaire, setQuestionnaire] = useState();
 
   const getFormProperties = () => {
     Api.get(`/questionnaire/form-properties`, {})
       .then((res) => {
         setLoading(false);
-        setFormProperties(res.data.data);
+        setQuestionnaire(res.data.data);
       })
       .catch((error) => console.log(error.response.data));
   };
 
   useEffect(getFormProperties, []);
+
+  //form submit
+  const handleSubmit = (e) => {
+    const formData = Object.fromEntries(new FormData(e.currentTarget));
+    console.log(formData);
+    e.preventDefault();
+    Api.post(`questionnaire/create`, formData)
+      .then((res) => {
+        alert("success");
+      })
+      .catch((error) => setError(error.response.data.message));
+  };
 
   return (
     <Container
@@ -63,53 +73,17 @@ const CreateForm = () => {
           component="form"
           elevation={0}
           sx={{ p: 3, display: "flex", flexDirection: "column", gap: 4 }}
+          noValidate
+          onSubmit={handleSubmit}
         >
           <Typography component="h1" variant="h5">
             Создать анкету
           </Typography>
-          {formProperties.map((group, i) => {
-            return (
-              <Grid
-                key={i}
-                container
-                spacing={2}
-                maxWidth="1070px"
-                sx={{ mb: 2 }}
-              >
-                {group.map((item, i) => {
-                  if (item.type == "input") {
-                    return (
-                      <Grid key={i} item xs={6}>
-                        <TextInput
-                          label={item.title}
-                          name={item.name}
-                          required={true}
-                        />
-                      </Grid>
-                    );
-                  }
-                  if (item.type == "select") {
-                    return (
-                      <Grid key={i} item xs={6}>
-                        <Select
-                          label={item.title}
-                          name={item.name}
-                          options={item.value}
-                        />
-                      </Grid>
-                    );
-                  }
-                  if (item.type == "calendar") {
-                    return (
-                      <Grid key={i} item xs={6}>
-                        <DateInput label={item.title} name={item.name} />
-                      </Grid>
-                    );
-                  }
-                })}
-              </Grid>
-            );
-          })}
+          <Questionnaire data={questionnaire} />
+          {error && <Typography color="error.main">{error}</Typography>}
+          <Button type="submit" variant="contained" sx={{ width: "180px" }}>
+            Сохранить
+          </Button>
         </Paper>
       )}
     </Container>

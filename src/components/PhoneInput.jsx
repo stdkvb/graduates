@@ -8,7 +8,7 @@ const PhoneInput = ({ name, label, defaultValue, onlyRead, required }) => {
 
   const phoneValidator = (value) => {
     if (
-      !/^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
+      !/^(\+7|7|8)?[\s\-]?\(?[0-9][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(
         value
       )
     )

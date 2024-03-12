@@ -32,6 +32,22 @@ let theme = createTheme({
         },
       },
     },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          "&.Mui-disabled": {
+            whiteSpace: "break-spaces !important",
+            color: "rgba(0, 0, 0, 0.87) !important",
+            WebkitTextFillColor: "rgba(0, 0, 0, 0.87) !important",
+          },
+        },
+        icon: {
+          "&.Mui-disabled": {
+            display: "none",
+          },
+        },
+      },
+    },
     // MuiFormHelperText: {
     //   styleOverrides: {
     //     root: {

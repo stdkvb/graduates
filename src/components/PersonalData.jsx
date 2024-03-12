@@ -17,7 +17,7 @@ const PersonalData = () => {
   const { user, setUser } = useContext(UserContext);
 
   //edit personal data
-  const [onlyRead, setOnlyRead] = useState(true);
+  const [readOnly, setReadOnly] = useState(true);
 
   //form validation
 
@@ -28,7 +28,7 @@ const PersonalData = () => {
     if (e.target.checkValidity()) {
       Api.post(`user/change`, formData)
         .then(() => {
-          setOnlyRead(true);
+          setReadOnly(true);
           setIsSuccess(true);
           setUser(formData);
         })
@@ -60,7 +60,7 @@ const PersonalData = () => {
               name="name"
               defaultValue={user.name}
               required={true}
-              onlyRead={onlyRead}
+              readOnly={readOnly}
             />
           </Grid>
           <Grid item xs={4}>
@@ -69,7 +69,7 @@ const PersonalData = () => {
               name="lastName"
               defaultValue={user.lastName}
               required={true}
-              onlyRead={onlyRead}
+              readOnly={readOnly}
             />
           </Grid>
           <Grid item xs={4}>
@@ -78,7 +78,7 @@ const PersonalData = () => {
               name="secondName"
               defaultValue={user.secondName}
               required={true}
-              onlyRead={onlyRead}
+              readOnly={readOnly}
             />
           </Grid>
           <Grid item xs={4}>
@@ -87,7 +87,7 @@ const PersonalData = () => {
               name="phone"
               defaultValue={user.phone}
               required={true}
-              onlyRead={onlyRead}
+              readOnly={readOnly}
             />
           </Grid>
           <Grid item xs={4}>
@@ -96,11 +96,11 @@ const PersonalData = () => {
               name="email"
               defaultValue={user.email}
               required={true}
-              onlyRead={onlyRead}
+              readOnly={readOnly}
             />
           </Grid>
         </Grid>
-        {!onlyRead ? (
+        {!readOnly ? (
           <Button type="submit" variant="contained" sx={{ width: "400px" }}>
             Сохранить
           </Button>
@@ -110,7 +110,7 @@ const PersonalData = () => {
             sx={{ width: "400px" }}
             onClick={(e) => {
               e.preventDefault();
-              setOnlyRead(false);
+              setReadOnly(false);
             }}
           >
             Редактировать

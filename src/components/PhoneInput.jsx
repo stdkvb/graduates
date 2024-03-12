@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TextField } from "@mui/material";
 import InputMask from "react-input-mask";
 
-const PhoneInput = ({ name, label, defaultValue, onlyRead, required }) => {
+const PhoneInput = ({ name, label, defaultValue, readOnly, required }) => {
   const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
 
@@ -27,13 +27,13 @@ const PhoneInput = ({ name, label, defaultValue, onlyRead, required }) => {
       mask="+7 (999) 999-99-99"
       value={value}
       onChange={handleChange}
-      disabled={onlyRead}
+      disabled={readOnly}
     >
       <TextField
         name={name}
         size="medium"
         fullWidth
-        required={onlyRead ? false : required}
+        required={readOnly ? false : required}
         label={label}
         error={!!error}
         helperText={error}

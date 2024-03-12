@@ -9,7 +9,8 @@ import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
 import Help from "./pages/Help";
-import CreateForm from "./pages/CreateForm";
+import CreatePerson from "./pages/CreatePerson";
+import Person from "./pages/Person";
 import PageNotFound from "./pages/PageNotFound";
 
 import Api from "./utils/api";
@@ -82,7 +83,8 @@ function App() {
           <Route path="/" element={<MainLayout onLogout={logOut} />}>
             <Route index path="profile" element={<Profile />} />
             <Route path="help" element={<Help />} />
-            <Route path="questionnaire/create" element={<CreateForm />} />
+            <Route path="create" element={<CreatePerson />} />
+            <Route path="person/:personId" element={<Person />} />
           </Route>
           <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
         </Route>

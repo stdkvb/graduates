@@ -6,7 +6,7 @@ const TextInput = ({
   label,
   defaultValue,
   validator,
-  onlyRead,
+  readOnly,
   multiline,
   required,
 }) => {
@@ -44,13 +44,13 @@ const TextInput = ({
       name={name}
       size="medium"
       fullWidth
-      required={onlyRead ? false : required}
+      required={readOnly ? false : required}
       label={label}
       value={value}
       onChange={handleChange}
       error={!!error}
       helperText={error}
-      disabled={onlyRead}
+      disabled={readOnly}
       multiline={multiline}
       minRows={4}
       InputLabelProps={{ shrink: true }}

@@ -29,34 +29,59 @@ const Questionnaire = ({ defaultValues }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [readOnly, setIsReadOnly] = useState(false);
 
+  function addDefaultValuesToForm(questionnaire, defaultValues) {
+    questionnaire.forEach((group) => {
+      group.forEach((field) => {
+        if (defaultValues.hasOwnProperty(field.name)) {
+          field.defaultValue = defaultValues[field.name];
+        }
+      });
+    });
+    questionnaire[3].forEach((field) => {
+      console.log(defaultValues.relatives);
+      defaultValues.relatives.forEach((relative) => {
+        if (relative.hasOwnProperty(field.name)) {
+          field.defaultValue = relative[field.name];
+        }
+      });
+    });
+    return questionnaire;
+  }
+
   //get questions
   const getFormProperties = () => {
-    Api.get(`/questionnaire/form-properties`, {}).then((res) => {
-      res.data.data.forEach((obj) => {
-        // Find the corresponding value in defaultValue using the key from the current object
-        const defaultValue = defaultValues[obj.key];
-        console.log(defaultValue);
+    Api.get(`/questionnaire/form-properties`, {})
+      .then((res) => {
+        if (defaultValues) {
+          setIsReadOnly(true);
+          const formWithDefaultValues = addDefaultValuesToForm(
+            res.data.data,
+            defaultValues
+          );
+          console.log(formWithDefaultValues);
+          setQuestionnaire(formWithDefaultValues);
+        } else {
+          setQuestionnaire(res.data.data);
+        }
 
-        // Add the defaultValue to the current object
-        obj.defaultValue = defaultValue;
-      });
-      setQuestionnaire(res.data.data);
-      setLoading(false);
-    });
-    // .catch((error) => setError(error.response.data));
+        setLoading(false);
+      })
+      .catch((error) => setError(error.response.data));
   };
   useEffect(getFormProperties, []);
-  console.log(defaultValues);
-  console.log(questionnaire);
 
   //add relatives
   const addRelatives = () => {
     const relative = questionnaire[3];
-    setProperties(questionnaire.splice(-3, 0, relative));
+    questionnaire.splice(-3, 0, relative);
+    console.log(questionnaire);
+    setQuestionnaire([...questionnaire]);
   };
 
   //add/delete files
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState(
+    defaultValues ? defaultValues.files : []
+  );
 
   const handleAddFile = (event) => {
     const files = selectedFiles.concat(Array.from(event.target.files));
@@ -79,14 +104,18 @@ const Questionnaire = ({ defaultValues }) => {
     for (let i = 0; i < selectedFiles.length; i++) {
       formData.append(`file${i}`, selectedFiles[i]);
     }
-    console.log(formData);
-    Api.post(`questionnaire/create`, formData, {
+    //add id for change
+    if (defaultValues) {
+      formData.append("id", defaultValues.id);
+    }
+    Api.post(`questionnaire/${defaultValues ? "change" : "create"}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
-    }).then((res) => {
-      setIsSuccess(true);
-      setError();
-    });
-    // .catch((error) => setError(error.response.data.message));
+    })
+      .then((res) => {
+        setIsSuccess(true);
+        setError();
+      })
+      .catch((error) => setError(error.response.data.message));
   };
 
   return (
@@ -121,7 +150,7 @@ const Questionnaire = ({ defaultValues }) => {
                           <TextInput
                             label={item.title}
                             name={item.name}
-                            defaultValue={item.value}
+                            defaultValue={item.defaultValue}
                             required={item.required}
                             readOnly={readOnly}
                           />
@@ -134,7 +163,7 @@ const Questionnaire = ({ defaultValues }) => {
                           <PhoneInput
                             label={item.title}
                             name={item.name}
-                            defaultValue={item.value}
+                            defaultValue={item.defaultValue}
                             required={item.required}
                             readOnly={readOnly}
                           />
@@ -150,7 +179,7 @@ const Questionnaire = ({ defaultValues }) => {
                             options={item.value}
                             required={item.required}
                             multiple={item.multiple}
-                            defaultValue={item.value}
+                            defaultValue={item.defaultValue}
                             readOnly={readOnly}
                           />
                         </Grid>
@@ -162,7 +191,7 @@ const Questionnaire = ({ defaultValues }) => {
                           <DateInput
                             label={item.title}
                             name={item.name}
-                            defaultValue={item.value}
+                            defaultValue={item.defaultValue}
                             required={item.required}
                             readOnly={readOnly}
                           />
@@ -175,6 +204,7 @@ const Questionnaire = ({ defaultValues }) => {
                           <TextInput
                             label={item.title}
                             name={item.name}
+                            defaultValue={item.defaultValue}
                             required={item.required}
                             multiline={true}
                             readOnly={readOnly}
@@ -187,6 +217,7 @@ const Questionnaire = ({ defaultValues }) => {
                         <Grid key={i} item xs={12}>
                           <FileInput
                             name={item.name}
+                            readOnly={readOnly}
                             selectedFiles={selectedFiles}
                             handleAddFile={handleAddFile}
                             handleDeleteFile={handleDeleteFile}
@@ -207,9 +238,25 @@ const Questionnaire = ({ defaultValues }) => {
               );
             })}
             {error && <Typography color="error.main">{error}</Typography>}
-            <Button type="submit" variant="contained" sx={{ width: "180px" }}>
-              Сохранить
-            </Button>
+            {defaultValues && defaultValues.my ? (
+              <Button
+                type={readOnly ? "button" : "submit"}
+                variant="contained"
+                sx={{ width: "180px" }}
+                onClick={(e) => {
+                  if (readOnly) {
+                    e.preventDefault();
+                    setIsReadOnly(false);
+                  }
+                }}
+              >
+                {readOnly ? "Редактировать" : "Сохранить"}
+              </Button>
+            ) : (
+              <Button type="submit" variant="contained" sx={{ width: "180px" }}>
+                Сохранить
+              </Button>
+            )}
           </Box>
           <Popup isPopupOpen={isSuccess}>
             <IconButton

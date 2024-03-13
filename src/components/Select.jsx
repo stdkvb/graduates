@@ -28,7 +28,7 @@ const CustomSelect = ({
   required,
 }) => {
   const [checkedOptions, setCheckedOptions] = React.useState(
-    readOnly ? defaultValue : []
+    readOnly ? [defaultValue] : []
   );
 
   const handleChange = (event) => {

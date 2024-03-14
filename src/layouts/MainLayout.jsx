@@ -93,7 +93,7 @@ const MainLayout = ({ onLogout }) => {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton>
+              <ListItemButton component={RouterLink} to="/materials">
                 <ListItemIcon>
                   <DescriptionIcon />
                 </ListItemIcon>

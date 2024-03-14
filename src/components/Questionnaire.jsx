@@ -30,6 +30,20 @@ const Questionnaire = ({ defaultValues }) => {
   const [readOnly, setIsReadOnly] = useState(false);
 
   function addDefaultValuesToForm(questionnaire, defaultValues) {
+    //add fields for each relative
+    if (defaultValues.relatives.length > 1) {
+      // const fourthArray = questionnaire[3];
+      // const firstFourElements = fourthArray.slice(0, 4);
+      // for (let i = 0; i < defaultValues.relatives.length - 1; i++) {
+      //   fourthArray.push(...firstFourElements);
+      // }
+      // console.log(questionnaire);
+      const relative = questionnaire[3];
+      for (let i = 0; i < defaultValues.relatives.length - 1; i++) {
+        questionnaire.splice(-3, 0, relative);
+      }
+    }
+    //fill fields
     questionnaire.forEach((group) => {
       group.forEach((field) => {
         if (defaultValues.hasOwnProperty(field.name)) {
@@ -37,45 +51,55 @@ const Questionnaire = ({ defaultValues }) => {
         }
       });
     });
-    questionnaire[3].forEach((field) => {
-      console.log(defaultValues.relatives);
-      defaultValues.relatives.forEach((relative) => {
-        if (relative.hasOwnProperty(field.name)) {
-          field.defaultValue = relative[field.name];
-        }
+    //fill relatives
+
+    for (let i = 0; i < defaultValues.relatives.length; i++) {
+      questionnaire[3 + i].forEach((field) => {
+        field.defaultValue =
+          defaultValues.relatives[i][field.name.replace(/\[\]/g, "")];
       });
-    });
+    }
+
+    console.log(questionnaire);
     return questionnaire;
   }
 
   //get questions
   const getFormProperties = () => {
-    Api.get(`/questionnaire/form-properties`, {})
-      .then((res) => {
-        if (defaultValues) {
-          setIsReadOnly(true);
-          const formWithDefaultValues = addDefaultValuesToForm(
-            res.data.data,
-            defaultValues
-          );
-          console.log(formWithDefaultValues);
-          setQuestionnaire(formWithDefaultValues);
-        } else {
-          setQuestionnaire(res.data.data);
-        }
+    Api.get(`/questionnaire/form-properties`, {}).then((res) => {
+      if (defaultValues) {
+        setIsReadOnly(true);
+        const formWithDefaultValues = addDefaultValuesToForm(
+          res.data.data,
+          defaultValues
+        );
+        // console.log(formWithDefaultValues);
+        setQuestionnaire(formWithDefaultValues);
+      } else {
+        setQuestionnaire(res.data.data);
+      }
 
-        setLoading(false);
-      })
-      .catch((error) => setError(error.response.data));
+      setLoading(false);
+    });
+    // .catch((error) => setError(error.response.data));
   };
   useEffect(getFormProperties, []);
 
   //add relatives
-  const addRelatives = () => {
+  const addRelatives = (iteration) => {
     const relative = questionnaire[3];
     questionnaire.splice(-3, 0, relative);
     console.log(questionnaire);
     setQuestionnaire([...questionnaire]);
+    // setQuestionnaire((prevState) => {
+    //   const newArray = [...prevState];
+    //   const fourthArray = newArray[3];
+    //   const firstFourElements = fourthArray.slice(0, 4);
+    //   for (let i = 0; i < iteration; i++) {
+    //     fourthArray.push(...firstFourElements);
+    //   }
+    //   return newArray;
+    // });
   };
 
   //add/delete files
@@ -98,24 +122,23 @@ const Questionnaire = ({ defaultValues }) => {
   //form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    // const formData = Object.fromEntries(new FormData(e.currentTarget));
     const formData = new FormData(e.currentTarget);
     //add files to formdata
     for (let i = 0; i < selectedFiles.length; i++) {
       formData.append(`file${i}`, selectedFiles[i]);
     }
-    //add id for change
+    console.log(formData);
+    //add id of person for change
     if (defaultValues) {
       formData.append("id", defaultValues.id);
     }
     Api.post(`questionnaire/${defaultValues ? "change" : "create"}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
-    })
-      .then((res) => {
-        setIsSuccess(true);
-        setError();
-      })
-      .catch((error) => setError(error.response.data.message));
+    }).then((res) => {
+      setIsSuccess(true);
+      setError();
+    });
+    // .catch((error) => setError(error.response.data.message));
   };
 
   return (
@@ -228,7 +251,7 @@ const Questionnaire = ({ defaultValues }) => {
                   })}
                   {i == questionnaire.length - 4 && !readOnly && (
                     <Grid item xs={12}>
-                      <Button onClick={addRelatives} variant="text">
+                      <Button onClick={() => addRelatives(1)} variant="text">
                         <AddIcon sx={{ mr: 1 }} />
                         Добавить родственника
                       </Button>
@@ -274,7 +297,7 @@ const Questionnaire = ({ defaultValues }) => {
             <Typography variant="h4" mb={3} sx={{ maxWidth: "90%" }}>
               Успешно
             </Typography>
-            <Typography color="text.secondary">Анкета создана</Typography>
+            <Typography color="text.secondary">Анкета сохранена</Typography>
             <Button
               variant="contained"
               fullWidth

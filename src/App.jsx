@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import PasswordRecovery from "./pages/PasswordRecovery";
 import NewPassword from "./pages/NewPassword";
 import Profile from "./pages/Profile";
+import DataBase from "./pages/DataBase";
 import Help from "./pages/Help";
 import CreatePerson from "./pages/CreatePerson";
 import Person from "./pages/Person";
@@ -23,6 +24,7 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState();
   const { user, setUser } = useContext(UserContext);
+  const [data, setData] = useState();
 
   //login submit
   const logIn = ({ login, password }) => {
@@ -45,21 +47,27 @@ function App() {
       .catch((error) => console.log(error.response.data));
   };
 
-  //get user info
-  const getUserInfo = () => {
+  //get data
+  const getData = () => {
+    //get user info
     Api.get(`user`)
       .then((res) => {
         setUser(res.data.data);
         setLoggedIn(true);
-        setLoading(false);
       })
       .catch((error) => {
         console.log(error.response.data);
         setLoading(false);
       });
+    Api.get(`/material/get-list`, {})
+      .then((res) => {
+        setData(res.data.data);
+        setLoading(false);
+      })
+      .catch((error) => console.log(error.response.data));
   };
 
-  useEffect(getUserInfo, []);
+  useEffect(getData, []);
 
   return (
     <Routes>
@@ -82,7 +90,8 @@ function App() {
       ) : loggedIn ? (
         <Route path="/">
           <Route path="/" element={<MainLayout onLogout={logOut} />}>
-            <Route index path="profile" element={<Profile />} />
+            <Route index path="/" element={<DataBase data={data} />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="help" element={<Help />} />
             <Route path="create" element={<CreatePerson />} />
             <Route path="person/:personId" element={<Person />} />

@@ -64,9 +64,11 @@ let theme = createTheme({
       styleOverrides: {
         root: {
           "&:hover": { backgroundColor: "rgba(0, 155, 0, 0.10)" },
-          "&.active": {
-            backgroundColor: "rgba(0, 155, 0, 0.10)",
+          "&.Mui-selected": {
+            backgroundColor: "unset",
             cursor: "default",
+            position: "relative",
+            borderRight: "solid 4px #018840",
           },
         },
       },
@@ -78,7 +80,7 @@ let theme = createTheme({
           cursor: "pointer",
           textDecoration: "none",
           textUnderlineOffset: "3px",
-          "&:hover": { textDecoration: "underline" },
+          "&:hover": { textDecoration: "underline", color: "#018840" },
         },
       },
     },

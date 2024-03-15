@@ -1,5 +1,10 @@
 import { useContext } from "react";
-import { Outlet, Link as RouterLink } from "react-router-dom";
+import {
+  Outlet,
+  Link as RouterLink,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { Avatar, Box, Stack, Divider, Button } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
@@ -40,6 +45,16 @@ const MainLayout = ({ onLogout }) => {
   //current user
   const user = useContext(UserContext).user;
 
+  //current page
+  const navigate = useNavigate();
+  let location = useLocation();
+  const pathName = location.pathname;
+  function activateMenuItem(pathname) {
+    if (pathname === pathName) {
+      return true;
+    }
+  }
+
   return (
     <Box sx={{ display: "flex" }}>
       <Header />
@@ -68,7 +83,11 @@ const MainLayout = ({ onLogout }) => {
         >
           <List>
             <ListItem disablePadding>
-              <ListItemButton component={RouterLink} to="/profile">
+              <ListItemButton
+                component={RouterLink}
+                to="/profile"
+                selected={activateMenuItem("/profile")}
+              >
                 <ListItemIcon>
                   <Avatar
                     {...stringAvatar(`${user.name}`, `${user.lastName}`)}
@@ -85,17 +104,27 @@ const MainLayout = ({ onLogout }) => {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton>
+              <ListItemButton
+                component={RouterLink}
+                to="/"
+                selected={activateMenuItem("/")}
+              >
                 <ListItemIcon>
-                  <FolderIcon />
+                  <FolderIcon color={activateMenuItem("/") && "primary"} />
                 </ListItemIcon>
                 <ListItemText primary="База анкет" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton component={RouterLink} to="/materials">
+              <ListItemButton
+                component={RouterLink}
+                to="/materials"
+                selected={activateMenuItem("/materials")}
+              >
                 <ListItemIcon>
-                  <DescriptionIcon />
+                  <DescriptionIcon
+                    color={activateMenuItem("/materials") && "primary"}
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Методические материалы" />
               </ListItemButton>

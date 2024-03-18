@@ -13,6 +13,7 @@ import Help from "./pages/Help";
 import CreatePerson from "./pages/CreatePerson";
 import Person from "./pages/Person";
 import Materials from "./pages/Materials";
+import Chat from "./pages/Chat";
 import PageNotFound from "./pages/PageNotFound";
 
 import Api from "./utils/api";
@@ -96,6 +97,7 @@ function App() {
             <Route path="create" element={<CreatePerson />} />
             <Route path="person/:personId" element={<Person />} />
             <Route path="materials" element={<Materials />} />
+            <Route path="chat/:chatId" element={<Chat />} />
           </Route>
           <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
         </Route>

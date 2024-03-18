@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import {
   Outlet,
   Link as RouterLink,
@@ -19,20 +19,38 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
+
+import Badge from "@mui/material/Badge";
 
 import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ChatIcon from "@mui/icons-material/Chat";
 import ExpandMoreOutlinedIcon from "@mui/icons-material/ExpandMoreOutlined";
+import MailIcon from "@mui/icons-material/Mail";
+import HelpCenterIcon from "@mui/icons-material/HelpCenter";
 
 import bashkortostanLogo from "../assets/images/bashkortostan.svg";
-
 import ornament from "../assets/images/ornament.svg";
 
 import Header from "../components/Header";
 
+import Api from "../utils/api";
+
 import { UserContext } from "../utils/context";
+
+const PopperMy = function ({ children }) {
+  return (
+    <Stack
+      open={true}
+      children={children}
+      style={{ width: "100%" }}
+      placement="bottom-start"
+    />
+  );
+};
 
 //avatar letters
 function stringAvatar(name, lastName) {
@@ -50,10 +68,32 @@ const MainLayout = ({ onLogout }) => {
   let location = useLocation();
   const pathName = location.pathname;
   function activateMenuItem(pathname) {
-    if (pathname === pathName) {
-      return true;
+    const words1 = pathName.replace(/\/(\d+)/g, " $1").split(/\s+/);
+    const words2 = pathname.replace(/\/(\d+)/g, " $1").split(/\s+/);
+    for (let word of words2) {
+      if (words1.includes(word)) {
+        return true;
+      }
     }
   }
+
+  //chat list
+  const [chatList, setChatList] = useState();
+  const [loading, setLoading] = useState(true);
+
+  const getChatList = () => {
+    //get user info
+    Api.get(`message/get-chats`, {})
+      .then((res) => {
+        setChatList(res.data.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  };
+
+  useEffect(getChatList, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -130,41 +170,101 @@ const MainLayout = ({ onLogout }) => {
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
+              <ListItemButton
+                component={RouterLink}
+                to="/help"
+                selected={activateMenuItem("/help")}
+              >
+                <ListItemIcon>
+                  <HelpCenterIcon
+                    color={activateMenuItem("/help") && "primary"}
+                  />
+                </ListItemIcon>
+                <ListItemText primary="Задать вопрос" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
               <Accordion
                 sx={{ boxShadow: "none", m: "0 !important", width: "100%" }}
               >
-                <ListItemButton
+                <AccordionSummary
+                  expandIcon={
+                    <IconButton>
+                      <ExpandMoreOutlinedIcon />
+                    </IconButton>
+                  }
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
                   sx={{
-                    maxHeight: "48px",
-                    display: "flex",
-                    justifyContent: "space-between",
+                    p: 0,
+                    height: "48px",
                   }}
                 >
-                  <ListItemIcon sx={{ height: "24px" }}>
-                    <ChatIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Чат" sx={{ m: 0 }} />
-                  <AccordionSummary
-                    expandIcon={
-                      <IconButton>
-                        <ExpandMoreOutlinedIcon />
-                      </IconButton>
-                    }
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
+                  <ListItemButton
                     sx={{
-                      p: 0,
+                      maxHeight: "48px",
+                      display: "flex",
+                      justifyContent: "space-between",
                     }}
-                  ></AccordionSummary>
-                </ListItemButton>
-                <AccordionDetails sx={{ p: 0 }}>
-                  <ListItemButton sx={{ px: [4] }}>
-                    <ListItemText primary="Купленные документы" />
+                    selected={activateMenuItem("/chat")}
+                  >
+                    <ListItemIcon sx={{ height: "24px" }}>
+                      <ChatIcon
+                        color={activateMenuItem("/chat") && "primary"}
+                      />
+                    </ListItemIcon>
+                    <ListItemText primary="Чат" sx={{ m: 0 }} />
                   </ListItemButton>
+                </AccordionSummary>
+
+                <AccordionDetails sx={{ p: 0 }}>
+                  {!loading && (
+                    <Autocomplete
+                      sx={{ px: 2, mt: 2 }}
+                      freeSolo
+                      id="free-solo-2-demo"
+                      disableCloseOnSelect
+                      open
+                      getOptionLabel={(option) => option.name}
+                      PaperComponent={Stack}
+                      PopperComponent={PopperMy}
+                      options={chatList}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Поиск"
+                          InputProps={{
+                            ...params.InputProps,
+                          }}
+                          InputLabelProps={{ shrink: true }}
+                        />
+                      )}
+                      renderOption={(params, option) => (
+                        <ListItemButton
+                          key={option.id}
+                          component={RouterLink}
+                          to={`/chat/${option.id}`}
+                          selected={activateMenuItem(`${option.id}`)}
+                        >
+                          <Badge
+                            badgeContent={
+                              option.unReadMessageCount > 0
+                                ? option.unReadMessageCount
+                                : 0
+                            }
+                            color="primary"
+                          >
+                            <MailIcon color="action" />
+                          </Badge>
+                          <ListItemText primary={option.name} sx={{ pl: 2 }} />
+                        </ListItemButton>
+                      )}
+                    />
+                  )}
                 </AccordionDetails>
               </Accordion>
             </ListItem>
-            <ListItem>
+            {/* <ListItem>
               <Button
                 variant="contained"
                 fullWidth
@@ -173,7 +273,7 @@ const MainLayout = ({ onLogout }) => {
               >
                 Задать вопрос
               </Button>
-            </ListItem>
+            </ListItem> */}
           </List>
           <Stack>
             <Box

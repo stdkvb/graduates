@@ -88,8 +88,19 @@ let theme = createTheme({
       styleOverrides: {
         root: {
           "&:before": { content: "none" },
-          ".MuiAccordionSummary-content": { margin: "0" },
-          ".MuiAccordionSummary-root .Mui-expanded": { minHeight: "unset" },
+          ".MuiAccordionSummary-content": {
+            margin: "0 !important",
+            height: "48px",
+          },
+          ".MuiAccordionSummary-root.Mui-expanded": {
+            minHeight: "unset !important",
+          },
+          ".MuiAccordionSummary-expandIconWrapper": {
+            position: "absolute",
+            right: "0",
+            top: "5px",
+            zIndex: "2",
+          },
         },
       },
     },

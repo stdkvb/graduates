@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -29,28 +30,41 @@ const Chat = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const [name, setName] = useState();
-  const [chat, setChat] = useState();
+  const [messages, setMessages] = useState({});
 
   //load messages
-  const getChat = () => {
+  const getMessages = () => {
     Api.post("message/read", { chatId: chatId });
-    Api.get("message/get-messages", { params: { chatId: chatId } })
+    Api.get("message/get-messages", {
+      params: { chatId: chatId, page: 1, limit: 10 },
+    })
       .then((res) => {
-        // // sort the keys (dates)
-        // const sortedKeys = Object.keys(res.data.data).sort();
-        // // create a new object with sorted keys
-        // const sortedChat = {};
-        // sortedKeys.forEach((key) => {
-        //   sortedChat[key] = res.data.data[key];
-        // });
-        setChat(res.data.data);
+        setMessages(Object.entries(res.data.data));
+
         setName(res.data.fio);
         setLoading(false);
       })
       .catch((error) => console.log(error.response.data));
   };
 
-  useEffect(getChat, [chatId]);
+  useEffect(getMessages, [chatId]);
+
+  //infinite scroll
+  const [page, setPage] = useState(2);
+  const getMoreMessages = () => {
+    Api.get("message/get-messages", {
+      params: { chatId: chatId, page: page, limit: 10 },
+    })
+      .then((res) => {
+        console.log(messages);
+        console.log(Object.entries(res.data.data));
+        const newMessages = Object.entries(res.data.data);
+        setMessages((prevMessages) => [...prevMessages, ...newMessages]);
+      })
+      .catch((error) => console.log(error.response.data));
+
+    setPage((prevPage) => prevPage + 1);
+  };
 
   //send message
   const sendMessage = (e) => {
@@ -59,7 +73,7 @@ const Chat = () => {
     formData.append("chatId", chatId);
     Api.post("message/add-message", formData)
       .then(() => {
-        getChat();
+        getMessages();
       })
       .catch((error) => console.log(error));
   };
@@ -80,195 +94,201 @@ const Chat = () => {
   // };
 
   return (
-    <>
-      <Container
-        maxWidth="false"
-        sx={{
-          mb: 4,
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          position: "relative",
-          minHeight: "calc(100vh - 112px)",
-        }}
-      >
-        {loading ? (
-          <CircularProgress
+    <Container
+      maxWidth="false"
+      sx={{
+        mb: 4,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        position: "relative",
+        minHeight: "calc(100vh - 112px)",
+      }}
+    >
+      {loading ? (
+        <CircularProgress
+          sx={{
+            position: "absolute",
+            top: "0",
+            bottom: "0",
+            left: "0",
+            right: "0",
+            margin: "auto",
+          }}
+        />
+      ) : (
+        <>
+          <Typography component="h1" variant="h5">
+            {name}
+          </Typography>
+          <Paper
+            elevation={0}
             sx={{
-              position: "absolute",
-              top: "0",
-              bottom: "0",
-              left: "0",
-              right: "0",
-              margin: "auto",
+              p: 0,
+              display: "flex",
+              flexDirection: "column",
+              flexGrow: "1",
+              overflow: "hidden",
+              justifyContent: "flex-end",
             }}
-          />
-        ) : (
-          <>
-            <Typography component="h1" variant="h5">
-              {name}
-            </Typography>
-            <Paper
-              elevation={0}
+          >
+            <Box
+              id="scrollableContainer"
+              align="center"
               sx={{
-                p: 0,
+                maxHeight: "calc( 100vh - 250px)",
+                overflowY: "auto",
+                p: 3,
                 display: "flex",
-                flexDirection: "column",
-                flexGrow: "1",
-                overflow: "hidden",
+                flexDirection: "column-reverse",
               }}
             >
-              <Grid
-                container
-                spacing={4}
-                sx={{
-                  p: 3,
-                  height: "calc(100vh - 220px)",
-                  overflowY: "scroll",
-                }}
-                direction="column"
-                // justifyContent={
-                //   Object.entries(chat).length == 0 ? "center" : "flex-end"
-                // }
-                wrap="nowrap"
-              >
-                {Object.entries(chat).length == 0 ? (
-                  <Grid
-                    item
-                    xs={12}
-                    align="center"
-                    justifyContent="center"
-                    sx={{ position: "relative" }}
-                  >
-                    <Typography
-                      color="text.secondary"
-                      sx={{
-                        width: "fit-content",
-                        height: "fit-content",
-                        position: "absolute",
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        margin: "auto",
-                      }}
-                    >
-                      Здесь пока нет сообщений
-                    </Typography>
-                  </Grid>
-                ) : (
-                  Object.entries(chat)
-                    .toReversed()
-                    .map((group, i) => {
-                      return (
-                        <>
-                          <Grid item xs={12}>
-                            <Divider
+              {messages.length == 0 ? (
+                <Typography
+                  color="text.secondary"
+                  sx={{
+                    width: "fit-content",
+                    height: "fit-content",
+                    position: "absolute",
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    margin: "auto",
+                  }}
+                >
+                  Здесь пока нет сообщений
+                </Typography>
+              ) : (
+                <InfiniteScroll
+                  dataLength={messages.length}
+                  next={getMoreMessages}
+                  style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
+                  inverse={true} //
+                  hasMore={true}
+                  scrollableTarget="scrollableContainer"
+                >
+                  {messages.map((group, i) => {
+                    return (
+                      <Box
+                        key={i}
+                        align="center"
+                        justifyContent="center"
+                        sx={{
+                          flexDirection: "column-reverse",
+                          display: "flex",
+                        }}
+                      >
+                        {group[1].map((message) => {
+                          return (
+                            <Box
+                              key={message.id}
                               sx={{
-                                fontSize: "12px",
-                                color: "rgba(0, 0, 0, 0.6)",
+                                display: "flex",
+                                alignItems: "flex-end",
+                                gap: 1,
+                                mb: 3,
+                                ...(message.income
+                                  ? {
+                                      justifyContent: "flex-start",
+                                    }
+                                  : {
+                                      justifyContent: "flex-end",
+                                    }),
                               }}
                             >
-                              {group[0]}
-                            </Divider>
-                          </Grid>
-                          {group[1].toReversed().map((message) => {
-                            return (
-                              <Grid
-                                key={message.id}
-                                item
-                                xs={12}
-                                container
-                                align={message.income ? "left" : "right"}
-                                sx={{ alignItems: "flex-end", gap: 1 }}
+                              {message.income && (
+                                <Avatar sx={{ width: 40, height: 40 }}>
+                                  {message.initials}
+                                </Avatar>
+                              )}
+                              <Stack
+                                direction="column"
+                                justifyContent="flex-start"
+                                alignItems={
+                                  message.income ? "flex-start" : "flex-end"
+                                }
+                                sx={{
+                                  width: "fit-content",
+                                  maxWidth: "530px",
+                                  position: "relative",
+                                }}
                               >
-                                <Grid item xs={0.5}>
-                                  {message.income && (
-                                    <Avatar sx={{ width: 40, height: 40 }}>
-                                      {message.initials}
-                                    </Avatar>
-                                  )}
-                                </Grid>
-                                <Grid item xs>
-                                  <Stack
-                                    direction="column"
-                                    justifyContent="flex-start"
-                                    alignItems={
-                                      message.income ? "flex-start" : "flex-end"
-                                    }
-                                    sx={{
-                                      width: "fit-content",
-                                      maxWidth: "530px",
-                                      position: "relative",
-                                    }}
-                                  >
-                                    <Chip
-                                      label={message.message}
-                                      sx={{
-                                        p: 2,
-                                        borderRadius: 1,
-                                        width: "fit-content",
-                                        height: "auto",
-                                        "& .MuiChip-label": {
-                                          display: "block",
-                                          whiteSpace: "normal",
-                                          padding: 0,
-                                        },
-                                      }}
-                                    />
-                                    <Typography
-                                      color="text.secondary"
-                                      sx={{
-                                        fontSize: "12px",
-                                        position: "absolute",
-                                        right: 0,
-                                        bottom: "-20px",
-                                      }}
-                                    >
-                                      {message.time}
-                                    </Typography>
-                                  </Stack>
-                                </Grid>
-                              </Grid>
-                            );
-                          })}
-                        </>
-                      );
-                    })
-                )}
-              </Grid>
-              <Divider />
-              <Box
-                component="form"
-                onSubmit={sendMessage}
-                sx={{
-                  p: 3,
-                  display: "flex",
-                  alignItems: "flex-end",
-                }}
-              >
-                {/* <FileInput
+                                <Chip
+                                  label={message.message}
+                                  sx={{
+                                    p: 2,
+                                    borderRadius: 1,
+                                    width: "fit-content",
+                                    height: "auto",
+                                    "& .MuiChip-label": {
+                                      display: "block",
+                                      whiteSpace: "normal",
+                                      padding: 0,
+                                    },
+                                  }}
+                                />
+                                <Typography
+                                  color="text.secondary"
+                                  sx={{
+                                    fontSize: "12px",
+                                    position: "absolute",
+                                    right: 0,
+                                    bottom: "-20px",
+                                  }}
+                                >
+                                  {message.time}
+                                </Typography>
+                              </Stack>
+                            </Box>
+                          );
+                        })}
+
+                        <Divider
+                          sx={{
+                            fontSize: "12px",
+                            color: "rgba(0, 0, 0, 0.6)",
+                          }}
+                        >
+                          {group[0]}
+                        </Divider>
+                      </Box>
+                    );
+                  })}
+                </InfiniteScroll>
+              )}
+            </Box>
+            <Divider />
+            <Box
+              component="form"
+              onSubmit={sendMessage}
+              sx={{
+                p: 3,
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              {/* <FileInput
                   name={""}
                   readOnly={false}
                   selectedFiles={selectedFiles}
                   handleAddFile={handleAddFile}
                   handleDeleteFile={handleDeleteFile}
                 /> */}
-                <AttachFileIcon />
-                <InputBase
-                  name="message"
-                  sx={{ ml: 1, flex: 1 }}
-                  placeholder="Текст сообщения..."
-                />
-                <Button sx={{ width: "180px" }} type="submit">
-                  Отправить
-                </Button>
-              </Box>
-            </Paper>
-          </>
-        )}
-      </Container>
-    </>
+              <AttachFileIcon />
+              <InputBase
+                name="message"
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Текст сообщения..."
+              />
+              <Button sx={{ width: "180px" }} type="submit">
+                Отправить
+              </Button>
+            </Box>
+          </Paper>
+        </>
+      )}
+    </Container>
   );
 };
 

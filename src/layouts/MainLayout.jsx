@@ -117,7 +117,7 @@ const MainLayout = ({ onLogout }) => {
           setUnreadMessageCount(sumOfUnreadMessages(res.data.data));
         })
         .catch((error) => console.log(error.response.data));
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   };

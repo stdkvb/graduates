@@ -26,6 +26,7 @@ import FileInput from "../components/FileInput";
 import Api from "../utils/api";
 import { Link } from "@mui/material";
 
+//merging messages
 const mergeArrays = (array1, array2) => {
   const mergedMap = new Map();
   // Merge arrays without duplicates
@@ -116,7 +117,7 @@ const Chat = () => {
           setMessages([...mergedArray]);
         })
         .catch((error) => console.log(error.response.data));
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   };
@@ -136,10 +137,25 @@ const Chat = () => {
       .catch((error) => console.log(error.response.data));
   };
 
+  // add / delete files;
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const handleAddFile = (event) => {
+    const files = selectedFiles.concat(Array.from(event.target.files));
+    setSelectedFiles(files);
+  };
+  const handleDeleteFile = (fileName) => {
+    const files = selectedFiles.filter((name) => {
+      return name.name !== fileName;
+    });
+    setSelectedFiles(files);
+  };
+
   //send message
+  const [messageText, setMessageText] = useState("");
   const sendMessage = (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    console.log(formData);
     //add files to formdata
     for (let i = 0; i < selectedFiles.length; i++) {
       formData.append(`file${i}`, selectedFiles[i]);
@@ -149,24 +165,11 @@ const Chat = () => {
       headers: { "Content-Type": "multipart/form-data" },
     })
       .then(() => {
+        setMessageText("");
+        setSelectedFiles([]);
         refreshMessages();
       })
       .catch((error) => console.log(error));
-  };
-
-  // add / delete files;
-  const [selectedFiles, setSelectedFiles] = useState([]);
-
-  const handleAddFile = (event) => {
-    const files = selectedFiles.concat(Array.from(event.target.files));
-    setSelectedFiles(files);
-  };
-
-  const handleDeleteFile = (fileName) => {
-    const files = selectedFiles.filter((name) => {
-      return name.name !== fileName;
-    });
-    setSelectedFiles(files);
   };
 
   return (
@@ -250,6 +253,7 @@ const Chat = () => {
                         key={i}
                         align="center"
                         justifyContent="center"
+                        gap={1}
                         sx={{
                           flexDirection: "column-reverse",
                           display: "flex",
@@ -311,7 +315,8 @@ const Chat = () => {
                                     </Stack>
                                   }
                                   sx={{
-                                    p: 1,
+                                    px: 1,
+                                    py: 1.5,
                                     borderRadius: 1,
                                     width: "fit-content",
                                     height: "auto",
@@ -320,6 +325,13 @@ const Chat = () => {
                                       whiteSpace: "normal",
                                       padding: 0,
                                     },
+                                    ...(message.income
+                                      ? {
+                                          backgroundColor: "#EEF5FF",
+                                        }
+                                      : {
+                                          backgroundColor: "#CCE8FF",
+                                        }),
                                   }}
                                 />
                                 <Typography
@@ -386,8 +398,14 @@ const Chat = () => {
                   sx={{ ml: 1, flex: 1 }}
                   placeholder="Текст сообщения..."
                   inputProps={{ autoComplete: "one-time-code" }}
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
                 />
-                <Button sx={{ width: "180px" }} type="submit">
+                <Button
+                  sx={{ width: "180px" }}
+                  type="submit"
+                  disabled={messageText == "" && selectedFiles.length == 0}
+                >
                   Отправить
                 </Button>
               </Box>

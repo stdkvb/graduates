@@ -28,7 +28,6 @@ import { Link } from "@mui/material";
 
 const mergeArrays = (array1, array2) => {
   const mergedMap = new Map();
-
   // Merge arrays without duplicates
   array1.forEach(([date, items]) => {
     const existingItems = mergedMap.get(date) || [];
@@ -64,7 +63,7 @@ const Chat = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState();
   const [name, setName] = useState();
-  const [messages, setMessages] = useState({});
+  const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
 
   //load messages on first open
@@ -94,10 +93,10 @@ const Chat = () => {
       params: { chatId: chatId, page: page + 1, limit: 15 },
     })
       .then((res) => {
-        console.log(messages);
         const newMessages = Object.entries(res.data.data);
-        console.log(newMessages);
-        setMessages((prevMessages) => [...prevMessages, ...newMessages]);
+        // setMessages((prevState) => [...prevState, ...newMessages]);
+        const mergedArray = mergeArrays(messages, newMessages);
+        setMessages([...mergedArray]);
       })
       .catch((error) => console.log(error.response.data));
 
@@ -109,11 +108,11 @@ const Chat = () => {
     const interval = setInterval(() => {
       Api.post("message/read", { chatId: chatId });
       Api.get("message/get-messages", {
-        params: { chatId: chatId, page: page, limit: 15 },
+        params: { chatId: chatId, page: 1, limit: 15 },
       })
         .then((res) => {
           const newMessages = Object.entries(res.data.data);
-          const mergedArray = mergeArrays(newMessages, messages);
+          const mergedArray = mergeArrays(messages, newMessages);
           setMessages([...mergedArray]);
         })
         .catch((error) => console.log(error.response.data));
@@ -123,15 +122,15 @@ const Chat = () => {
   };
   useEffect(autoRefreshMessages, [messages, chatId, page]);
 
-  //refresh messages
+  // refresh messages
   const refreshMessages = () => {
     Api.post("message/read", { chatId: chatId });
     Api.get("message/get-messages", {
-      params: { chatId: chatId, page: page, limit: 15 },
+      params: { chatId: chatId, page: 1, limit: 15 },
     })
       .then((res) => {
         const newMessages = Object.entries(res.data.data);
-        const mergedArray = mergeArrays(newMessages, messages);
+        const mergedArray = mergeArrays(messages, newMessages);
         setMessages([...mergedArray]);
       })
       .catch((error) => console.log(error.response.data));
@@ -146,7 +145,9 @@ const Chat = () => {
       formData.append(`file${i}`, selectedFiles[i]);
     }
     formData.append("chatId", chatId);
-    Api.post("message/add-message", formData)
+    Api.post("message/add-message", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
       .then(() => {
         refreshMessages();
       })
@@ -236,10 +237,10 @@ const Chat = () => {
                 </Typography>
               ) : (
                 <InfiniteScroll
-                  dataLength={messages.length}
+                  dataLength={page * 10}
                   next={getMoreMessages}
-                  style={{ display: "flex", flexDirection: "column-reverse" }} //To put endMessage and loader to the top.
-                  inverse={true} //
+                  style={{ display: "flex", flexDirection: "column-reverse" }}
+                  inverse={true}
                   hasMore={true}
                   scrollableTarget="scrollableContainer"
                 >
@@ -296,7 +297,6 @@ const Chat = () => {
                                       spacing={0.5}
                                     >
                                       <Typography textAlign="left">
-                                        {message.id}
                                         {message.message}
                                       </Typography>
                                       {message.files.map((file, i) => (

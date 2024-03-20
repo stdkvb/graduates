@@ -41,6 +41,7 @@ import Api from "../utils/api";
 
 import { UserContext } from "../utils/context";
 
+//component for chatList
 const PopperMy = function ({ children }) {
   return (
     <Stack
@@ -50,6 +51,18 @@ const PopperMy = function ({ children }) {
       placement="bottom-start"
     />
   );
+};
+
+//calculate summ of unread messages
+const sumOfUnreadMessages = (data) => {
+  return data.reduce((total, current) => {
+    // convert empty string to 0
+    const count =
+      current.unReadMessageCount === ""
+        ? 0
+        : parseInt(current.unReadMessageCount);
+    return total + count;
+  }, 0);
 };
 
 //avatar letters
@@ -80,20 +93,35 @@ const MainLayout = ({ onLogout }) => {
   //chat list
   const [chatList, setChatList] = useState();
   const [loading, setLoading] = useState(true);
+  const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   const getChatList = () => {
-    //get user info
     Api.get(`message/get-chats`, {})
       .then((res) => {
         setChatList(res.data.data);
+        setUnreadMessageCount(sumOfUnreadMessages(res.data.data));
         setLoading(false);
       })
       .catch((error) => {
         console.log(error.response.data);
       });
   };
-
   useEffect(getChatList, []);
+
+  //auto refresh chatlist
+  const autoRefreshChatList = () => {
+    const interval = setInterval(() => {
+      Api.get("message/get-chats", {})
+        .then((res) => {
+          setChatList(res.data.data);
+          setUnreadMessageCount(sumOfUnreadMessages(res.data.data));
+        })
+        .catch((error) => console.log(error.response.data));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  };
+  useEffect(autoRefreshChatList, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -209,9 +237,11 @@ const MainLayout = ({ onLogout }) => {
                     selected={activateMenuItem("/chat")}
                   >
                     <ListItemIcon sx={{ height: "24px" }}>
-                      <ChatIcon
-                        color={activateMenuItem("/chat") && "primary"}
-                      />
+                      <Badge badgeContent={unreadMessageCount} color="primary">
+                        <ChatIcon
+                          color={activateMenuItem("/chat") && "primary"}
+                        />
+                      </Badge>
                     </ListItemIcon>
                     <ListItemText primary="Чат" sx={{ m: 0 }} />
                   </ListItemButton>
@@ -228,7 +258,18 @@ const MainLayout = ({ onLogout }) => {
                       getOptionLabel={(option) => option.name}
                       PaperComponent={Stack}
                       PopperComponent={PopperMy}
-                      options={chatList}
+                      options={chatList.sort((a, b) => {
+                        // convert empty string to 0 for proper sorting by unread messages
+                        const countA =
+                          a.unReadMessageCount === ""
+                            ? 0
+                            : parseInt(a.unReadMessageCount);
+                        const countB =
+                          b.unReadMessageCount === ""
+                            ? 0
+                            : parseInt(b.unReadMessageCount);
+                        return countB - countA;
+                      })}
                       renderInput={(params) => (
                         <TextField
                           {...params}
@@ -264,16 +305,6 @@ const MainLayout = ({ onLogout }) => {
                 </AccordionDetails>
               </Accordion>
             </ListItem>
-            {/* <ListItem>
-              <Button
-                variant="contained"
-                fullWidth
-                component={RouterLink}
-                to="/help"
-              >
-                Задать вопрос
-              </Button>
-            </ListItem> */}
           </List>
           <Stack>
             <Box

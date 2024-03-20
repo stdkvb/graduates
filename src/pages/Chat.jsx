@@ -24,6 +24,40 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import FileInput from "../components/FileInput";
 
 import Api from "../utils/api";
+import { Link } from "@mui/material";
+
+const mergeArrays = (array1, array2) => {
+  const mergedMap = new Map();
+
+  // Merge arrays without duplicates
+  array1.forEach(([date, items]) => {
+    const existingItems = mergedMap.get(date) || [];
+    items.forEach((item) => {
+      if (!existingItems.find((existingItem) => existingItem.id === item.id)) {
+        existingItems.push(item);
+      }
+    });
+    mergedMap.set(date, existingItems);
+  });
+
+  array2.forEach(([date, items]) => {
+    const existingItems = mergedMap.get(date) || [];
+    items.forEach((item) => {
+      if (!existingItems.find((existingItem) => existingItem.id === item.id)) {
+        existingItems.push(item);
+      }
+    });
+    mergedMap.set(date, existingItems);
+  });
+
+  // Convert map to array and sort by id
+  const mergedArray = Array.from(mergedMap.entries());
+  mergedArray.forEach(([_, items]) => {
+    items.sort((a, b) => b.id - a.id);
+  });
+
+  return mergedArray;
+};
 
 const Chat = () => {
   let { chatId } = useParams();
@@ -31,18 +65,23 @@ const Chat = () => {
   const [error, setError] = useState();
   const [name, setName] = useState();
   const [messages, setMessages] = useState({});
+  const [page, setPage] = useState(1);
 
-  //load messages
+  //load messages on first open
   const getMessages = () => {
     Api.post("message/read", { chatId: chatId });
     Api.get("message/get-messages", {
-      params: { chatId: chatId, page: 1, limit: 10 },
+      params: { chatId: chatId, page: page, limit: 15 },
     })
       .then((res) => {
-        setMessages(Object.entries(res.data.data));
-
+        const data = Object.entries(res.data.data);
+        data.forEach(([_, items]) => {
+          items.sort((a, b) => b.id - a.id);
+        });
+        setMessages(data);
         setName(res.data.fio);
         setLoading(false);
+        setPage(1);
       })
       .catch((error) => console.log(error.response.data));
   };
@@ -50,15 +89,14 @@ const Chat = () => {
   useEffect(getMessages, [chatId]);
 
   //infinite scroll
-  const [page, setPage] = useState(2);
   const getMoreMessages = () => {
     Api.get("message/get-messages", {
-      params: { chatId: chatId, page: page, limit: 10 },
+      params: { chatId: chatId, page: page + 1, limit: 15 },
     })
       .then((res) => {
         console.log(messages);
-        console.log(Object.entries(res.data.data));
         const newMessages = Object.entries(res.data.data);
+        console.log(newMessages);
         setMessages((prevMessages) => [...prevMessages, ...newMessages]);
       })
       .catch((error) => console.log(error.response.data));
@@ -66,32 +104,69 @@ const Chat = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
+  //auto refresh
+  const autoRefreshMessages = () => {
+    const interval = setInterval(() => {
+      Api.post("message/read", { chatId: chatId });
+      Api.get("message/get-messages", {
+        params: { chatId: chatId, page: page, limit: 15 },
+      })
+        .then((res) => {
+          const newMessages = Object.entries(res.data.data);
+          const mergedArray = mergeArrays(newMessages, messages);
+          setMessages([...mergedArray]);
+        })
+        .catch((error) => console.log(error.response.data));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  };
+  useEffect(autoRefreshMessages, [messages, chatId, page]);
+
+  //refresh messages
+  const refreshMessages = () => {
+    Api.post("message/read", { chatId: chatId });
+    Api.get("message/get-messages", {
+      params: { chatId: chatId, page: page, limit: 15 },
+    })
+      .then((res) => {
+        const newMessages = Object.entries(res.data.data);
+        const mergedArray = mergeArrays(newMessages, messages);
+        setMessages([...mergedArray]);
+      })
+      .catch((error) => console.log(error.response.data));
+  };
+
   //send message
   const sendMessage = (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    //add files to formdata
+    for (let i = 0; i < selectedFiles.length; i++) {
+      formData.append(`file${i}`, selectedFiles[i]);
+    }
     formData.append("chatId", chatId);
     Api.post("message/add-message", formData)
       .then(() => {
-        getMessages();
+        refreshMessages();
       })
       .catch((error) => console.log(error));
   };
 
-  //add/delete files
-  // const [selectedFiles, setSelectedFiles] = useState([]);
+  // add / delete files;
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
-  // const handleAddFile = (event) => {
-  //   const files = selectedFiles.concat(Array.from(event.target.files));
-  //   setSelectedFiles(files);
-  // };
+  const handleAddFile = (event) => {
+    const files = selectedFiles.concat(Array.from(event.target.files));
+    setSelectedFiles(files);
+  };
 
-  // const handleDeleteFile = (fileName) => {
-  //   const files = selectedFiles.filter((name) => {
-  //     return name.name !== fileName;
-  //   });
-  //   setSelectedFiles(files);
-  // };
+  const handleDeleteFile = (fileName) => {
+    const files = selectedFiles.filter((name) => {
+      return name.name !== fileName;
+    });
+    setSelectedFiles(files);
+  };
 
   return (
     <Container
@@ -136,7 +211,7 @@ const Chat = () => {
               id="scrollableContainer"
               align="center"
               sx={{
-                maxHeight: "calc( 100vh - 250px)",
+                maxHeight: "calc( 100vh - 251px)",
                 overflowY: "auto",
                 p: 3,
                 display: "flex",
@@ -215,9 +290,28 @@ const Chat = () => {
                                 }}
                               >
                                 <Chip
-                                  label={message.message}
+                                  label={
+                                    <Stack
+                                      alignItems="flex-start"
+                                      spacing={0.5}
+                                    >
+                                      <Typography textAlign="left">
+                                        {message.id}
+                                        {message.message}
+                                      </Typography>
+                                      {message.files.map((file, i) => (
+                                        <Link
+                                          key={i}
+                                          href={file.url}
+                                          target="_blank"
+                                        >
+                                          {file.name}
+                                        </Link>
+                                      ))}
+                                    </Stack>
+                                  }
                                   sx={{
-                                    p: 2,
+                                    p: 1,
                                     borderRadius: 1,
                                     width: "fit-content",
                                     height: "auto",
@@ -264,26 +358,39 @@ const Chat = () => {
               onSubmit={sendMessage}
               sx={{
                 p: 3,
-                display: "flex",
-                alignItems: "flex-end",
               }}
             >
-              {/* <FileInput
-                  name={""}
-                  readOnly={false}
-                  selectedFiles={selectedFiles}
-                  handleAddFile={handleAddFile}
-                  handleDeleteFile={handleDeleteFile}
-                /> */}
-              <AttachFileIcon />
-              <InputBase
-                name="message"
-                sx={{ ml: 1, flex: 1 }}
-                placeholder="Текст сообщения..."
+              <FileInput
+                label={
+                  <IconButton component="div" sx={{ mb: -2 }}>
+                    <AttachFileIcon />
+                  </IconButton>
+                }
+                readOnly={false}
+                selectedFiles={selectedFiles}
+                handleAddFile={handleAddFile}
+                handleDeleteFile={handleDeleteFile}
               />
-              <Button sx={{ width: "180px" }} type="submit">
-                Отправить
-              </Button>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  pl: 5,
+                  mt: -3,
+                  gap: 1,
+                }}
+              >
+                <InputBase
+                  fullWidth
+                  name="message"
+                  sx={{ ml: 1, flex: 1 }}
+                  placeholder="Текст сообщения..."
+                  inputProps={{ autoComplete: "one-time-code" }}
+                />
+                <Button sx={{ width: "180px" }} type="submit">
+                  Отправить
+                </Button>
+              </Box>
             </Box>
           </Paper>
         </>

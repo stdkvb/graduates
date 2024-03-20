@@ -14,6 +14,7 @@ import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutl
 import ClearIcon from "@mui/icons-material/Clear";
 
 const FileInput = ({
+  label,
   name,
   readOnly,
   selectedFiles,
@@ -34,7 +35,16 @@ const FileInput = ({
                     {file.name}
                   </Link>
                 ) : (
-                  <Typography color="primary.main">{file.name}</Typography>
+                  <Typography
+                    color="primary.main"
+                    sx={{
+                      maxWidth: "500px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {file.name}
+                  </Typography>
                 )}
 
                 {!readOnly && (
@@ -62,9 +72,13 @@ const FileInput = ({
       />
       {!readOnly && (
         <label htmlFor="multiple-file-input">
-          <Button variant="outlined" component="span">
-            Выберите файлы
-          </Button>
+          {label ? (
+            label
+          ) : (
+            <Button variant="outlined" component="span">
+              Выберите файлы
+            </Button>
+          )}
         </label>
       )}
     </Box>

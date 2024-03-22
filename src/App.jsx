@@ -27,19 +27,57 @@ function App() {
   const { user, setUser } = useContext(UserContext);
   const [data, setData] = useState();
 
+  //get data
+  const getData = (token) => {
+    //get user info
+    Api.get(`user`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => {
+        setUser(res.data.data);
+        setLoggedIn(true);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+    Api.get(`/material/get-list`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => {
+        setData(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  useEffect(getData, []);
+
   //login submit
   const logIn = ({ login, password }) => {
     Api.post(`auth/login`, { login, password })
       .then((res) => {
-        setLoggedIn(true);
         localStorage.setItem("token", res.data.token);
+        getData();
+        setLoggedIn(true);
+        setError();
       })
       .catch((error) => setError(error.response.data));
   };
 
   //logout
   const logOut = () => {
-    Api.get(`auth/logout`, {})
+    Api.get(`auth/logout`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then(() => {
         setLoggedIn(false);
         localStorage.clear();
@@ -47,28 +85,6 @@ function App() {
       })
       .catch((error) => console.log(error.response.data));
   };
-
-  //get data
-  const getData = () => {
-    //get user info
-    Api.get(`user`)
-      .then((res) => {
-        setUser(res.data.data);
-        setLoggedIn(true);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-        setLoading(false);
-      });
-    Api.get(`/material/get-list`, {})
-      .then((res) => {
-        setData(res.data.data);
-        setLoading(false);
-      })
-      .catch((error) => console.log(error.response.data));
-  };
-
-  useEffect(getData, []);
 
   return (
     <Routes>

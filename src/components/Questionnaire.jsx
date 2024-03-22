@@ -30,38 +30,58 @@ const Questionnaire = ({ defaultValues }) => {
   const [readOnly, setIsReadOnly] = useState(false);
 
   function addDefaultValuesToForm(questionnaire, defaultValues) {
-    //add fields for each relative
-    if (defaultValues.relatives.length > 1) {
-      // const fourthArray = questionnaire[3];
-      // const firstFourElements = fourthArray.slice(0, 4);
-      // for (let i = 0; i < defaultValues.relatives.length - 1; i++) {
-      //   fourthArray.push(...firstFourElements);
-      // }
-      // console.log(questionnaire);
-      const relative = questionnaire[3];
-      for (let i = 0; i < defaultValues.relatives.length - 1; i++) {
-        questionnaire.splice(-3, 0, relative);
+    // Create a new array to store the modified questionnaire
+    const newQuestionnaire = [];
+
+    questionnaire.forEach((group, groupIndex) => {
+      // Check if group is an array
+      if (Array.isArray(group)) {
+        // Clone the group and fill fields with default values
+        const newGroup = group.map((field) => ({ ...field }));
+        newGroup.forEach((field) => {
+          if (defaultValues.hasOwnProperty(field.name)) {
+            field.defaultValue = defaultValues[field.name];
+          }
+        });
+        newQuestionnaire.push(newGroup);
+      } else {
+        console.log("Group at index", groupIndex, "is not an array:", group);
+        // If group is not an array, push it directly to the new questionnaire
+        newQuestionnaire.push(group);
       }
-    }
-    //fill fields
-    questionnaire.forEach((group) => {
-      group.forEach((field) => {
-        if (defaultValues.hasOwnProperty(field.name)) {
-          field.defaultValue = defaultValues[field.name];
-        }
-      });
     });
-    //fill relatives
 
-    for (let i = 0; i < defaultValues.relatives.length; i++) {
-      questionnaire[3 + i].forEach((field) => {
-        field.defaultValue =
-          defaultValues.relatives[i][field.name.replace(/\[\]/g, "")];
+    // Add relative fields with default values
+    if (defaultValues.relatives.length > 0) {
+      const relativeFieldsTemplate = JSON.parse(
+        JSON.stringify(questionnaire[3])
+      ); // Clone the relative fields template
+      let processedRelatives = 0;
+
+      defaultValues.relatives.forEach((relativeValues) => {
+        const relativeFields = relativeFieldsTemplate.map((field) => {
+          const defaultValue =
+            relativeValues[field.name.replace(/\[\]/g, "")] || "";
+          return { ...field, defaultValue };
+        });
+
+        // Insert relative fields into the new questionnaire array after the template
+        newQuestionnaire.splice(4, 0, relativeFields);
+        processedRelatives++;
       });
+
+      // Check if the number of processed relatives matches the expected length
+      if (processedRelatives !== defaultValues.relatives.length) {
+        console.error(
+          "Error: Processed relatives count does not match expected length."
+        );
+      }
+
+      // Remove the template from the new questionnaire array
+      newQuestionnaire.splice(3, 1);
     }
 
-    console.log(questionnaire);
-    return questionnaire;
+    return newQuestionnaire;
   }
 
   //get questions
@@ -73,7 +93,7 @@ const Questionnaire = ({ defaultValues }) => {
           res.data.data,
           defaultValues
         );
-        // console.log(formWithDefaultValues);
+        console.log(formWithDefaultValues);
         setQuestionnaire(formWithDefaultValues);
       } else {
         setQuestionnaire(res.data.data);
@@ -86,59 +106,81 @@ const Questionnaire = ({ defaultValues }) => {
   useEffect(getFormProperties, []);
 
   //add relatives
-  const addRelatives = (iteration) => {
-    const relative = questionnaire[3];
-    questionnaire.splice(-3, 0, relative);
-    console.log(questionnaire);
-    setQuestionnaire([...questionnaire]);
-    // setQuestionnaire((prevState) => {
-    //   const newArray = [...prevState];
-    //   const fourthArray = newArray[3];
-    //   const firstFourElements = fourthArray.slice(0, 4);
-    //   for (let i = 0; i < iteration; i++) {
-    //     fourthArray.push(...firstFourElements);
-    //   }
-    //   return newArray;
-    // });
+  const addRelatives = () => {
+    // Assuming questionnaire is already initialized and not null
+    const relativeFieldsTemplate = JSON.parse(JSON.stringify(questionnaire[3])); // Clone the relative fields template
+
+    const newRelativeFields = relativeFieldsTemplate.map((field) => {
+      return { ...field };
+    });
+
+    // Create a new copy of the questionnaire array
+    const updatedQuestionnaire = [...questionnaire];
+
+    // Insert newRelativeFields at the appropriate index
+    updatedQuestionnaire.splice(-3, 0, newRelativeFields);
+
+    // Remove defaultValue from the last added relative
+    if (updatedQuestionnaire.length > 0) {
+      const lastRelativeIndex = updatedQuestionnaire.findIndex(
+        (group) => Array.isArray(group) && group.includes(newRelativeFields[0])
+      );
+      if (lastRelativeIndex !== -1) {
+        updatedQuestionnaire[lastRelativeIndex].forEach((field) => {
+          delete field.defaultValue;
+        });
+      }
+    }
+    console.log(updatedQuestionnaire);
+
+    // Update the state with the modified questionnaire
+    setQuestionnaire(updatedQuestionnaire);
   };
 
   //add/delete files
   const [selectedFiles, setSelectedFiles] = useState(
     defaultValues ? defaultValues.files : []
   );
+  const [deletedFiles, setDeletedFiles] = useState([]);
 
   const handleAddFile = (event) => {
     const files = selectedFiles.concat(Array.from(event.target.files));
     setSelectedFiles(files);
   };
 
-  const handleDeleteFile = (fileName) => {
+  const handleDeleteFile = (fileName, fileId) => {
     const files = selectedFiles.filter((name) => {
       return name.name !== fileName;
     });
     setSelectedFiles(files);
+
+    setDeletedFiles(deletedFiles.concat(fileId));
+    console.log(deletedFiles.concat(fileId));
   };
 
   //form submit
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    //add files to formdata
-    for (let i = 0; i < selectedFiles.length; i++) {
-      formData.append(`file${i}`, selectedFiles[i]);
-    }
-    console.log(formData);
     //add id of person for change
     if (defaultValues) {
       formData.append("id", defaultValues.id);
     }
+    //add files to formdata
+    for (let i = 0; i < selectedFiles.length; i++) {
+      formData.append(`file${i}`, selectedFiles[i]);
+    }
+    //add files id list for delete
+    formData.append("delFileIdList", deletedFiles);
+
     Api.post(`questionnaire/${defaultValues ? "change" : "create"}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
-    }).then((res) => {
-      setIsSuccess(true);
-      setError();
-    });
-    // .catch((error) => setError(error.response.data.message));
+    })
+      .then((res) => {
+        setIsSuccess(true);
+        setError();
+      })
+      .catch((error) => setError(error.response.data.message));
   };
 
   return (
@@ -251,7 +293,7 @@ const Questionnaire = ({ defaultValues }) => {
                   })}
                   {i == questionnaire.length - 4 && !readOnly && (
                     <Grid item xs={12}>
-                      <Button onClick={() => addRelatives(1)} variant="text">
+                      <Button onClick={addRelatives} variant="text">
                         <AddIcon sx={{ mr: 1 }} />
                         Добавить родственника
                       </Button>
@@ -260,7 +302,11 @@ const Questionnaire = ({ defaultValues }) => {
                 </Grid>
               );
             })}
-            {error && <Typography color="error.main">{error}</Typography>}
+            {error && (
+              <Typography color="error.main" sx={{ mb: 1 }}>
+                {error}
+              </Typography>
+            )}
             {defaultValues && defaultValues.my ? (
               <Button
                 type={readOnly ? "button" : "submit"}

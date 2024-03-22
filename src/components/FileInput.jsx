@@ -51,7 +51,7 @@ const FileInput = ({
                   <IconButton
                     sx={{ ml: 1, p: 0 }}
                     onClick={() => {
-                      handleDeleteFile(file.name);
+                      handleDeleteFile(file.name, file.id);
                     }}
                   >
                     <ClearIcon />
@@ -63,7 +63,7 @@ const FileInput = ({
         </Stack>
       )}
       <input
-        // name={name}
+        name={name}
         type="file"
         multiple
         onChange={handleAddFile}

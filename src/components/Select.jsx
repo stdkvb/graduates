@@ -7,17 +7,6 @@ import ListItemText from "@mui/material/ListItemText";
 import Select from "@mui/material/Select";
 import Checkbox from "@mui/material/Checkbox";
 
-// const ITEM_HEIGHT = 48;
-// const ITEM_PADDING_TOP = 8;
-// const MenuProps = {
-//   PaperProps: {
-//     style: {
-//       maxHeight: 48 * 4.5 + 8,
-//       width: 250,
-//     },
-//   },
-// };
-
 const CustomSelect = ({
   name,
   label,
@@ -61,7 +50,16 @@ const CustomSelect = ({
           value={checkedOptions}
           onChange={handleChange}
           name={name}
-          input={<OutlinedInput label={label} />}
+          input={
+            <OutlinedInput
+              label={label}
+              sx={{
+                [`& .MuiInputBase-input`]: {
+                  whiteSpace: "break-spaces",
+                },
+              }}
+            />
+          }
           renderValue={(selected) => selected.join(", ")}
           MenuProps={{
             PaperProps: {

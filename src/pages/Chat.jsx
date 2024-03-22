@@ -317,6 +317,7 @@ const Chat = () => {
                                   sx={{
                                     px: 1,
                                     py: 1.5,
+                                    mx: 2,
                                     borderRadius: 1,
                                     width: "fit-content",
                                     height: "auto",
@@ -324,6 +325,29 @@ const Chat = () => {
                                       display: "block",
                                       whiteSpace: "normal",
                                       padding: 0,
+                                    },
+                                    "&::before": {
+                                      content: '""',
+                                      display: "block",
+                                      width: "20px",
+                                      height: "10px",
+                                      bottom: 0,
+                                      position: "absolute",
+
+                                      ...(message.income
+                                        ? {
+                                            backgroundColor: "#EEF5FF",
+                                            clipPath:
+                                              "polygon(100% 0, 0% 100%, 100% 100%)",
+
+                                            left: "3px",
+                                          }
+                                        : {
+                                            backgroundColor: "#CCE8FF",
+                                            clipPath:
+                                              "polygon(0 0, 0% 100%, 100% 100%)",
+                                            right: "3px",
+                                          }),
                                     },
                                     ...(message.income
                                       ? {
@@ -374,7 +398,10 @@ const Chat = () => {
             >
               <FileInput
                 label={
-                  <IconButton component="div" sx={{ mb: -2 }}>
+                  <IconButton
+                    component="div"
+                    sx={{ mb: -2, transform: "rotate(45deg)" }}
+                  >
                     <AttachFileIcon />
                   </IconButton>
                 }

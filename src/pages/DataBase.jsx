@@ -82,7 +82,7 @@ const DataBase = ({ data }) => {
             name="search"
             size="small"
             fullWidth
-            required="true"
+            required={true}
             label="Поиск выпускника"
             InputLabelProps={{ shrink: true }}
             inputProps={{

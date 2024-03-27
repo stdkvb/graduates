@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Container,
-  Paper,
-  Stack,
-  Typography,
-  Button,
-  Grid,
-  Box,
-} from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { Typography, Button, Grid, Box } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,6 +16,7 @@ import Popup from "../components/Popup";
 import Api from "../utils/api";
 
 const Questionnaire = ({ defaultValues }) => {
+  const navigate = useNavigate();
   const [questionnaire, setQuestionnaire] = useState();
   const [error, setError] = useState();
   const [loading, setLoading] = useState(true);
@@ -93,7 +87,6 @@ const Questionnaire = ({ defaultValues }) => {
           res.data.data,
           defaultValues
         );
-        console.log(formWithDefaultValues);
         setQuestionnaire(formWithDefaultValues);
       } else {
         setQuestionnaire(res.data.data);
@@ -166,12 +159,15 @@ const Questionnaire = ({ defaultValues }) => {
     if (defaultValues) {
       formData.append("id", defaultValues.id);
     }
-    //add files to formdata
-    for (let i = 0; i < selectedFiles.length; i++) {
-      formData.append(`file${i}`, selectedFiles[i]);
+    //add new files to formdata and clear selectedFiles from defaultValues
+    const clearedFileList = selectedFiles.filter((obj) => "type" in obj);
+    for (let i = 0; i < clearedFileList.length; i++) {
+      formData.append(`file${i}`, clearedFileList[i]);
     }
     //add files id list for delete
-    formData.append("delFileIdList", deletedFiles);
+    if (deletedFiles.length > 0) {
+      formData.append("delFileIdList", deletedFiles);
+    }
 
     Api.post(`questionnaire/${defaultValues ? "change" : "create"}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -330,7 +326,8 @@ const Questionnaire = ({ defaultValues }) => {
           <Popup isPopupOpen={isSuccess}>
             <IconButton
               onClick={() => {
-                setIsSuccess(false);
+                // setIsSuccess(false);
+                navigate("/");
               }}
               sx={{
                 position: "absolute",
@@ -349,7 +346,8 @@ const Questionnaire = ({ defaultValues }) => {
               fullWidth
               sx={{ mt: 4 }}
               onClick={() => {
-                setIsSuccess(false);
+                // setIsSuccess(false);
+                navigate("/");
               }}
             >
               Закрыть

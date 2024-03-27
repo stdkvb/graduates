@@ -6,20 +6,15 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
 import Divider from "@mui/material/Divider";
-import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import DirectionsIcon from "@mui/icons-material/Directions";
 import CircularProgress from "@mui/material/CircularProgress";
-import MailIcon from "@mui/icons-material/Mail";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 
 import FileInput from "../components/FileInput";
 
@@ -67,11 +62,46 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [page, setPage] = useState(1);
 
+  //current date
+  function isToday(dateString) {
+    // Parsing the date string into a Date object
+    var dateParts = dateString.split(".");
+    var dateObject = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]); // Year, Month (0-based), Day
+
+    // Get today's date
+    var today = new Date();
+    today.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to zero for accurate comparison
+
+    // Compare the dates
+    if (dateObject.getTime() === today.getTime()) {
+      return "сегодня";
+    } else {
+      return dateString;
+    }
+  }
+
   //load messages on first open
   const getMessages = () => {
-    Api.post("message/read", { chatId: chatId });
+    //reset message input
+    setMessageText("");
+    setSelectedFiles([]);
+
+    Api.post(
+      "message/read",
+      {
+        chatId: chatId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     Api.get("message/get-messages", {
       params: { chatId: chatId, page: page, limit: 15 },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((res) => {
         const data = Object.entries(res.data.data);
@@ -92,6 +122,9 @@ const Chat = () => {
   const getMoreMessages = () => {
     Api.get("message/get-messages", {
       params: { chatId: chatId, page: page + 1, limit: 15 },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((res) => {
         const newMessages = Object.entries(res.data.data);
@@ -107,9 +140,22 @@ const Chat = () => {
   //auto refresh
   const autoRefreshMessages = () => {
     const interval = setInterval(() => {
-      Api.post("message/read", { chatId: chatId });
+      Api.post(
+        "message/read",
+        {
+          chatId: chatId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       Api.get("message/get-messages", {
         params: { chatId: chatId, page: 1, limit: 15 },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       })
         .then((res) => {
           const newMessages = Object.entries(res.data.data);
@@ -125,9 +171,22 @@ const Chat = () => {
 
   // refresh messages
   const refreshMessages = () => {
-    Api.post("message/read", { chatId: chatId });
+    Api.post(
+      "message/read",
+      {
+        chatId: chatId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
     Api.get("message/get-messages", {
       params: { chatId: chatId, page: 1, limit: 15 },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((res) => {
         const newMessages = Object.entries(res.data.data);
@@ -155,14 +214,17 @@ const Chat = () => {
   const sendMessage = (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    console.log(formData);
+
     //add files to formdata
     for (let i = 0; i < selectedFiles.length; i++) {
       formData.append(`file${i}`, selectedFiles[i]);
     }
     formData.append("chatId", chatId);
     Api.post("message/add-message", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then(() => {
         setMessageText("");
@@ -197,7 +259,7 @@ const Chat = () => {
         />
       ) : (
         <>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h4">
             {name}
           </Typography>
           <Paper
@@ -308,7 +370,16 @@ const Chat = () => {
                                           key={i}
                                           href={file.url}
                                           target="_blank"
+                                          color="primary.main"
+                                          sx={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
                                         >
+                                          <InsertDriveFileOutlinedIcon
+                                            color="primary"
+                                            sx={{ mr: 0.5, width: "20px" }}
+                                          />
                                           {file.name}
                                         </Link>
                                       ))}
@@ -380,7 +451,7 @@ const Chat = () => {
                             color: "rgba(0, 0, 0, 0.6)",
                           }}
                         >
-                          {group[0]}
+                          {isToday(group[0])}
                         </Divider>
                       </Box>
                     );

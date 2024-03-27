@@ -10,7 +10,9 @@ import centerLogo from "../assets/images/center.svg";
 import Footer from "../components/Footer";
 
 const AuthLayout = () => {
+  //min app width
   const requiredWidth = useMediaQuery("(min-width:1200px)");
+
   return (
     <>
       {requiredWidth ? (

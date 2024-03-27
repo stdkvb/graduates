@@ -55,7 +55,7 @@ const CustomSelect = ({
               label={label}
               sx={{
                 [`& .MuiInputBase-input`]: {
-                  whiteSpace: "break-spaces",
+                  whiteSpace: "break-spaces !important",
                 },
               }}
             />

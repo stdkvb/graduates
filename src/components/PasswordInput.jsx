@@ -2,9 +2,14 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 
-const PasswordInput = ({ label, name, validator }) => {
+const PasswordInput = ({ label, name, validator, reset }) => {
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
+
+  //reset input
+  useEffect(() => {
+    setValue("");
+  }, [reset]);
 
   //default validator
   const defaultValidator = (value) => {

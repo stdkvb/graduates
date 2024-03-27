@@ -50,6 +50,7 @@ const Help = () => {
           display: "flex",
           flexDirection: "column",
           gap: 2,
+          px: 4,
         }}
       >
         <Typography component="h1" variant="h4">

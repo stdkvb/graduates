@@ -63,7 +63,6 @@ const FileInput = ({
         </Stack>
       )}
       <input
-        name={name}
         type="file"
         multiple
         onChange={handleAddFile}

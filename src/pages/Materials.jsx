@@ -20,7 +20,11 @@ const Materials = () => {
 
   //get data
   const getMaterials = () => {
-    Api.get(`/material/get-list`, {})
+    Api.get(`/material/get-list`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((res) => {
         setMaterials(res.data.data);
         setLoading(false);

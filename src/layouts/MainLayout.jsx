@@ -5,7 +5,8 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom";
-import { Avatar, Box, Stack, Divider, Button } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Avatar, Box, Stack, Divider, Button, Container } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -73,6 +74,9 @@ function stringAvatar(name, lastName) {
 }
 
 const MainLayout = ({ onLogout }) => {
+  //min app width
+  const requiredWidth = useMediaQuery("(min-width:1200px)");
+
   //current user
   const user = useContext(UserContext).user;
 
@@ -96,7 +100,11 @@ const MainLayout = ({ onLogout }) => {
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   const getChatList = () => {
-    Api.get(`message/get-chats`, {})
+    Api.get(`message/get-chats`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((res) => {
         setChatList(res.data.data);
         setUnreadMessageCount(sumOfUnreadMessages(res.data.data));
@@ -111,7 +119,11 @@ const MainLayout = ({ onLogout }) => {
   //auto refresh chatlist
   const autoRefreshChatList = () => {
     const interval = setInterval(() => {
-      Api.get("message/get-chats", {})
+      Api.get("message/get-chats", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
         .then((res) => {
           setChatList(res.data.data);
           setUnreadMessageCount(sumOfUnreadMessages(res.data.data));
@@ -123,220 +135,249 @@ const MainLayout = ({ onLogout }) => {
   };
   useEffect(autoRefreshChatList, []);
 
-  return (
-    <Box sx={{ display: "flex" }}>
-      <Header />
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: 295,
-          flexShrink: 0,
-          height: "100%",
-          [`& .MuiDrawer-paper`]: {
-            width: 295,
-            boxSizing: "border-box",
-          },
-        }}
-      >
-        <Toolbar />
-        <Box
+  if (requiredWidth)
+    return (
+      <Box sx={{ display: "flex" }}>
+        <Header />
+        <Drawer
+          variant="permanent"
           sx={{
-            overflow: "auto",
+            width: 295,
+            flexShrink: 0,
             height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            my: 2,
+            [`& .MuiDrawer-paper`]: {
+              width: 295,
+              boxSizing: "border-box",
+            },
           }}
         >
-          <List>
-            <ListItem disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to="/profile"
-                selected={activateMenuItem("/profile")}
-              >
-                <ListItemIcon>
-                  <Avatar
-                    {...stringAvatar(`${user.name}`, `${user.lastName}`)}
-                  />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Stack direction="column">
-                      <Typography>{user.name}</Typography>
-                      <Typography>{user.lastName}</Typography>
-                    </Stack>
-                  }
-                />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to="/"
-                selected={activateMenuItem("/")}
-              >
-                <ListItemIcon>
-                  <FolderIcon color={activateMenuItem("/") && "primary"} />
-                </ListItemIcon>
-                <ListItemText primary="База анкет" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to="/materials"
-                selected={activateMenuItem("/materials")}
-              >
-                <ListItemIcon>
-                  <DescriptionIcon
-                    color={activateMenuItem("/materials") && "primary"}
-                  />
-                </ListItemIcon>
-                <ListItemText primary="Методические материалы" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton
-                component={RouterLink}
-                to="/help"
-                selected={activateMenuItem("/help")}
-              >
-                <ListItemIcon>
-                  <HelpCenterIcon
-                    color={activateMenuItem("/help") && "primary"}
-                  />
-                </ListItemIcon>
-                <ListItemText primary="Задать вопрос" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <Accordion
-                sx={{ boxShadow: "none", m: "0 !important", width: "100%" }}
-              >
-                <AccordionSummary
-                  expandIcon={
-                    <IconButton>
-                      <ExpandMoreOutlinedIcon />
-                    </IconButton>
-                  }
-                  aria-controls="panel1a-content"
-                  id="panel1a-header"
-                  sx={{
-                    p: 0,
-                    height: "48px",
-                  }}
+          <Toolbar />
+          <Box
+            sx={{
+              overflow: "auto",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              my: 2,
+            }}
+          >
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to="/profile"
+                  selected={activateMenuItem("/profile")}
                 >
-                  <ListItemButton
-                    sx={{
-                      maxHeight: "48px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                    }}
-                    selected={activateMenuItem("/chat")}
-                  >
-                    <ListItemIcon sx={{ height: "24px" }}>
-                      <Badge badgeContent={unreadMessageCount} color="primary">
-                        <ChatIcon
-                          color={activateMenuItem("/chat") && "primary"}
-                        />
-                      </Badge>
-                    </ListItemIcon>
-                    <ListItemText primary="Чат" sx={{ m: 0 }} />
-                  </ListItemButton>
-                </AccordionSummary>
-
-                <AccordionDetails sx={{ p: 0 }}>
-                  {!loading && (
-                    <Autocomplete
-                      sx={{ px: 2, mt: 2 }}
-                      freeSolo
-                      id="free-solo-2-demo"
-                      disableCloseOnSelect
-                      open
-                      getOptionLabel={(option) => option.name}
-                      PaperComponent={Stack}
-                      PopperComponent={PopperMy}
-                      options={chatList.sort((a, b) => {
-                        // convert empty string to 0 for proper sorting by unread messages
-                        const countA =
-                          a.unReadMessageCount === ""
-                            ? 0
-                            : parseInt(a.unReadMessageCount);
-                        const countB =
-                          b.unReadMessageCount === ""
-                            ? 0
-                            : parseInt(b.unReadMessageCount);
-                        return countB - countA;
-                      })}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Поиск"
-                          InputProps={{
-                            ...params.InputProps,
-                          }}
-                          InputLabelProps={{ shrink: true }}
-                        />
-                      )}
-                      renderOption={(params, option) => (
-                        <ListItemButton
-                          key={option.id}
-                          component={RouterLink}
-                          to={`/chat/${option.id}`}
-                          selected={activateMenuItem(`${option.id}`)}
-                        >
-                          <Badge
-                            badgeContent={
-                              option.unReadMessageCount > 0
-                                ? option.unReadMessageCount
-                                : 0
-                            }
-                            color="primary"
-                          >
-                            <MailIcon color="action" />
-                          </Badge>
-                          <ListItemText primary={option.name} sx={{ pl: 2 }} />
-                        </ListItemButton>
-                      )}
+                  <ListItemIcon>
+                    <Avatar
+                      {...stringAvatar(`${user.name}`, `${user.lastName}`)}
                     />
-                  )}
-                </AccordionDetails>
-              </Accordion>
-            </ListItem>
-          </List>
-          <Stack>
-            <Box
-              component="img"
-              alt="logo"
-              src={bashkortostanLogo}
-              sx={{ width: "70px", ml: 2, mb: 3 }}
-            />
-            <ListItemButton onClick={onLogout}>
-              <ListItemIcon>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Выйти" />
-            </ListItemButton>
-          </Stack>
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Stack direction="column">
+                        <Typography>
+                          {`${user.name} 
+                        ${user.lastName}`}
+                        </Typography>
+                        <Typography color="text.secondary">
+                          {user.email}
+                        </Typography>
+                      </Stack>
+                    }
+                  />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to="/"
+                  selected={activateMenuItem("/")}
+                >
+                  <ListItemIcon>
+                    <FolderIcon color={activateMenuItem("/") && "primary"} />
+                  </ListItemIcon>
+                  <ListItemText primary="База анкет" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to="/materials"
+                  selected={activateMenuItem("/materials")}
+                >
+                  <ListItemIcon>
+                    <DescriptionIcon
+                      color={activateMenuItem("/materials") && "primary"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Методические материалы" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to="/help"
+                  selected={activateMenuItem("/help")}
+                >
+                  <ListItemIcon>
+                    <HelpCenterIcon
+                      color={activateMenuItem("/help") && "primary"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Задать вопрос" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <Accordion
+                  sx={{ boxShadow: "none", m: "0 !important", width: "100%" }}
+                >
+                  <AccordionSummary
+                    expandIcon={
+                      <IconButton>
+                        <ExpandMoreOutlinedIcon />
+                      </IconButton>
+                    }
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                    sx={{
+                      p: 0,
+                      height: "48px",
+                    }}
+                  >
+                    <ListItemButton
+                      sx={{
+                        maxHeight: "48px",
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                      selected={activateMenuItem("/chat")}
+                    >
+                      <ListItemIcon sx={{ height: "24px" }}>
+                        <Badge
+                          badgeContent={unreadMessageCount}
+                          color="primary"
+                        >
+                          <ChatIcon
+                            color={activateMenuItem("/chat") && "primary"}
+                          />
+                        </Badge>
+                      </ListItemIcon>
+                      <ListItemText primary="Чат" sx={{ m: 0 }} />
+                    </ListItemButton>
+                  </AccordionSummary>
+
+                  <AccordionDetails sx={{ p: 0 }}>
+                    {!loading && (
+                      <Autocomplete
+                        sx={{ px: 2, mt: 2 }}
+                        freeSolo
+                        id="free-solo-2-demo"
+                        disableCloseOnSelect
+                        open
+                        getOptionLabel={(option) => option.name}
+                        PaperComponent={Stack}
+                        PopperComponent={PopperMy}
+                        options={chatList.sort((a, b) => {
+                          // convert empty string to 0 for proper sorting by unread messages
+                          const countA =
+                            a.unReadMessageCount === ""
+                              ? 0
+                              : parseInt(a.unReadMessageCount);
+                          const countB =
+                            b.unReadMessageCount === ""
+                              ? 0
+                              : parseInt(b.unReadMessageCount);
+                          return countB - countA;
+                        })}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Поиск"
+                            InputProps={{
+                              ...params.InputProps,
+                            }}
+                            InputLabelProps={{ shrink: true }}
+                          />
+                        )}
+                        renderOption={(params, option) => (
+                          <ListItemButton
+                            key={option.id}
+                            component={RouterLink}
+                            to={`/chat/${option.id}`}
+                            selected={activateMenuItem(`${option.id}`)}
+                          >
+                            <Badge
+                              badgeContent={
+                                option.unReadMessageCount > 0
+                                  ? option.unReadMessageCount
+                                  : 0
+                              }
+                              color="primary"
+                            >
+                              <MailIcon color="action" />
+                            </Badge>
+                            <ListItemText
+                              primary={option.name}
+                              sx={{ pl: 2 }}
+                            />
+                          </ListItemButton>
+                        )}
+                      />
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              </ListItem>
+            </List>
+            <Stack>
+              <Box
+                component="img"
+                alt="logo"
+                src={bashkortostanLogo}
+                sx={{ width: "70px", ml: 2, mb: 3 }}
+              />
+              <ListItemButton onClick={onLogout}>
+                <ListItemIcon>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText primary="Выйти" />
+              </ListItemButton>
+            </Stack>
+          </Box>
+        </Drawer>
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            minHeight: "100vh",
+            backgroundImage: `url(${ornament})`,
+            backgroundPosition: "top",
+            backgroundColor: "rgba(0, 0, 0, 0.05)",
+            pt: 12,
+          }}
+        >
+          <Outlet />
         </Box>
-      </Drawer>
-      <Box
-        component="main"
+      </Box>
+    );
+  else
+    return (
+      <Container
         sx={{
-          flexGrow: 1,
           minHeight: "100vh",
-          backgroundImage: `url(${ornament})`,
-          backgroundPosition: "top",
-          backgroundColor: "rgba(0, 0, 0, 0.05)",
-          pt: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <Outlet />
-      </Box>
-    </Box>
-  );
+        <Typography textAlign="center">
+          Пожалуйста, используйте приложение с устройства с разрешением не менее
+          1200рх.
+        </Typography>
+      </Container>
+    );
 };
 
 export default MainLayout;

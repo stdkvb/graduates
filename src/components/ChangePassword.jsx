@@ -13,6 +13,9 @@ const ChangePassword = () => {
   //query errors
   const [error, setError] = useState();
 
+  //reset form
+  const [reset, setReset] = useState(false);
+
   //form validation
   const passwordValidator = (value) => {
     if (value.length < 6) return "Пароль должен содержать не менее 6 символов";
@@ -27,6 +30,7 @@ const ChangePassword = () => {
       if (formData.newPassword !== formData.confirmPassword) {
         setError("Введеные пароли не совпадают");
       } else {
+        setReset(true);
         Api.post(`user/change-password`, formData)
           .then(() => {
             setIsSuccess(true);
@@ -56,13 +60,18 @@ const ChangePassword = () => {
         </Typography>
         <Grid container spacing={2} rowSpacing={4} maxWidth="1248px">
           <Grid item xs={4}>
-            <PasswordInput label="Текущий пароль" name="oldPassword" />
+            <PasswordInput
+              label="Текущий пароль"
+              name="oldPassword"
+              reset={reset}
+            />
           </Grid>
           <Grid item xs={4}>
             <PasswordInput
               label="Введите новый пароль"
               name="newPassword"
               validator={passwordValidator}
+              reset={reset}
             />
           </Grid>
           <Grid item xs={4}>
@@ -70,6 +79,7 @@ const ChangePassword = () => {
               label="Повторите новый пароль"
               name="confirmPassword"
               validator={passwordValidator}
+              reset={reset}
             />
           </Grid>
         </Grid>

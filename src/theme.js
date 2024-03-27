@@ -21,6 +21,14 @@ let theme = createTheme({
     },
   },
   components: {
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          paddingLeft: "32px !important",
+          paddingRight: "32px !important",
+        },
+      },
+    },
     MuiTextField: {
       defaultProps: { size: "small" },
       styleOverrides: {

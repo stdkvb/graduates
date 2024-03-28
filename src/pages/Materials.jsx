@@ -29,7 +29,10 @@ const Materials = () => {
         setMaterials(res.data.data);
         setLoading(false);
       })
-      .catch((error) => console.log(error.response.data));
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.response.data);
+      });
   };
 
   useEffect(getMaterials, []);

@@ -48,7 +48,7 @@ const PopperMy = function ({ children }) {
     <Stack
       open={true}
       children={children}
-      style={{ width: "100%" }}
+      style={{ width: "100%", maxHeight: "calc(100vh - 620px)" }}
       placement="bottom-start"
     />
   );
@@ -154,7 +154,8 @@ const MainLayout = ({ onLogout }) => {
           <Toolbar />
           <Box
             sx={{
-              overflow: "auto",
+              overflowY: "auto",
+              overflowX: "hidden",
               height: "100%",
               display: "flex",
               flexDirection: "column",

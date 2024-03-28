@@ -74,9 +74,9 @@ const Chat = () => {
 
     // Compare the dates
     if (dateObject.getTime() === today.getTime()) {
-      return "сегодня";
+      return true;
     } else {
-      return dateString;
+      return false;
     }
   }
 
@@ -451,7 +451,7 @@ const Chat = () => {
                             color: "rgba(0, 0, 0, 0.6)",
                           }}
                         >
-                          {isToday(group[0])}
+                          {isToday(group[0]) ? "сегодня" : group[0]}
                         </Divider>
                       </Box>
                     );

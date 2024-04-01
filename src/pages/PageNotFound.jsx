@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { Button, Stack, Box } from "@mui/material";
 
-import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const PageNotFound = ({ loggedIn }) => {
@@ -12,16 +11,21 @@ const PageNotFound = ({ loggedIn }) => {
   return (
     <Box
       sx={{
+        height: loggedIn ? "calc(100vh - 65px)" : "calc(100vh - 150px)",
+        position: "absolute",
+        backgroundColor: "#FFFFFF",
+        width: "100vw",
+        left: "0",
+        bottom: "0",
+        marginTop: "-96px",
+        zIndex: "2000",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
         alignItems: "center",
-        height: "100vh",
+        justifyContent: "center",
       }}
     >
-      <Header />
       <Box
-        component="main"
         sx={{
           flexGrow: "1",
           display: "flex",

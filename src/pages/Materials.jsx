@@ -75,98 +75,127 @@ const Materials = () => {
           }}
         />
       ) : (
-        <Paper sx={{ width: "100%", overflow: "hidden", px: 2 }}>
-          <TableContainer>
-            <Table aria-label="table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column}
-                      sx={{
-                        fontSize: "14px",
-                        pl: 0,
-                        color: "text.secondary",
-                        fontWeight: "400",
-                      }}
-                    >
-                      {column}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {materials &&
-                  materials
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      return (
-                        <TableRow tabIndex={-1} key={row.id}>
-                          <TableCell
-                            sx={{
-                              pl: 0,
-                              minWidth: "250px",
-                            }}
-                          >
-                            <Stack
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                flexDirection: "row",
-                                gap: 2,
-                                fontSize: "16px",
-                              }}
-                            >
-                              <InsertDriveFileOutlinedIcon
-                                sx={{ mt: "-4px" }}
-                              />
-                              {row.name}
-                            </Stack>
-                          </TableCell>
-                          <TableCell
-                            sx={{
-                              pl: 0,
-                              fontSize: "16px",
-                            }}
-                          >
-                            {row.description}
-                          </TableCell>
-                          <TableCell
-                            sx={{
-                              pl: 0,
-                              fontSize: "16px",
-                              minWidth: "150px",
-                            }}
-                          >
-                            {row.date}
-                          </TableCell>
-                          <TableCell sx={{ minWidth: "200px" }}>
-                            <Button
-                              component="a"
-                              variant="text"
-                              href={row.file.url}
-                              target="_blank"
-                            >
-                              Скачать документ
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            labelRowsPerPage="Документов на странице"
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={materials && materials.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
+        <>
+          {!materials ? (
+            <Typography
+              color="text.secondary"
+              sx={{
+                width: "fit-content",
+                height: "fit-content",
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                margin: "auto",
+              }}
+            >
+              Методических материалов пока нет
+            </Typography>
+          ) : (
+            <Paper
+              sx={{
+                width: "100%",
+                overflow: "hidden",
+                px: 2,
+              }}
+            >
+              <TableContainer>
+                <Table aria-label="table">
+                  <TableHead>
+                    <TableRow>
+                      {columns.map((column) => (
+                        <TableCell
+                          key={column}
+                          sx={{
+                            fontSize: "14px",
+                            pl: 0,
+                            color: "text.secondary",
+                            fontWeight: "400",
+                          }}
+                        >
+                          {column}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {materials &&
+                      materials
+                        .slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        .map((row) => {
+                          return (
+                            <TableRow tabIndex={-1} key={row.id}>
+                              <TableCell
+                                sx={{
+                                  pl: 0,
+                                  minWidth: "250px",
+                                }}
+                              >
+                                <Stack
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexDirection: "row",
+                                    gap: 2,
+                                    fontSize: "16px",
+                                  }}
+                                >
+                                  <InsertDriveFileOutlinedIcon
+                                    sx={{ mt: "-4px" }}
+                                  />
+                                  {row.name}
+                                </Stack>
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  pl: 0,
+                                  fontSize: "16px",
+                                }}
+                              >
+                                {row.description}
+                              </TableCell>
+                              <TableCell
+                                sx={{
+                                  pl: 0,
+                                  fontSize: "16px",
+                                  minWidth: "150px",
+                                }}
+                              >
+                                {row.date}
+                              </TableCell>
+                              <TableCell sx={{ minWidth: "200px" }}>
+                                <Button
+                                  component="a"
+                                  variant="text"
+                                  href={row.file.url}
+                                  target="_blank"
+                                >
+                                  Скачать документ
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                labelRowsPerPage="Документов на странице"
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={materials && materials.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          )}
+        </>
       )}
     </Container>
   );

@@ -105,32 +105,28 @@ function App() {
           }
         />
       ) : loggedIn ? (
-        <Route path="/">
-          <Route path="/" element={<MainLayout onLogout={logOut} />}>
-            <Route index path="/" element={<DataBase data={data} />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="help" element={<Help />} />
-            <Route path="create" element={<CreatePerson />} />
-            <Route path="person/:personId" element={<Person />} />
-            <Route path="materials" element={<Materials />} />
-            <Route path="chat/:chatId" element={<Chat />} />
-          </Route>
+        <Route path="/" element={<MainLayout onLogout={logOut} />}>
+          <Route index path="/" element={<DataBase data={data} />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="help" element={<Help />} />
+          <Route path="create" element={<CreatePerson />} />
+          <Route path="person/:personId" element={<Person />} />
+          <Route path="materials" element={<Materials />} />
+          <Route path="chat/:chatId" element={<Chat />} />
           <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
         </Route>
       ) : (
-        <Route path="/">
-          <Route path="/" element={<AuthLayout />}>
-            <Route
-              index
-              path="/"
-              element={<Login onLoginSubmit={logIn} error={error} />}
-            />
-            <Route path="password-recovery" element={<PasswordRecovery />} />
-            <Route
-              path="check/password-recovery-code"
-              element={<NewPassword />}
-            />
-          </Route>
+        <Route path="/" element={<AuthLayout />}>
+          <Route
+            index
+            path="/"
+            element={<Login onLoginSubmit={logIn} error={error} />}
+          />
+          <Route path="password-recovery" element={<PasswordRecovery />} />
+          <Route
+            path="check/password-recovery-code"
+            element={<NewPassword />}
+          />
           <Route path="*" element={<PageNotFound loggedIn={loggedIn} />} />
         </Route>
       )}

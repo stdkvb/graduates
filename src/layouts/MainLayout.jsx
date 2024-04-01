@@ -356,6 +356,7 @@ const MainLayout = ({ onLogout }) => {
             backgroundPosition: "top",
             backgroundColor: "rgba(0, 0, 0, 0.05)",
             pt: 12,
+            position: "relative",
           }}
         >
           <Outlet />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { TextField } from "@mui/material";
 
 const TextInput = ({
@@ -10,8 +10,12 @@ const TextInput = ({
   multiline,
   required,
 }) => {
-  const [value, setValue] = useState(defaultValue ? defaultValue : "");
+  const [value, setValue] = useState("");
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   //default validator
   const defaultValidator = (value) => {

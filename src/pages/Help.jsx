@@ -23,8 +23,11 @@ const Help = () => {
   //current user
   const { user } = useContext(UserContext);
 
+  const [questionValue, setQuestionValue] = useState([]);
+
   //form submit
   const handleSubmit = (e) => {
+    setQuestionValue([...questionValue]);
     const formData = Object.fromEntries(new FormData(e.currentTarget));
     e.preventDefault();
     if (e.target.checkValidity()) {
@@ -96,6 +99,7 @@ const Help = () => {
                 name="text"
                 required={true}
                 multiline={true}
+                defaultValue={questionValue}
               />
             </Grid>
           </Grid>

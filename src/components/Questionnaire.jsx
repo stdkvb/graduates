@@ -80,7 +80,11 @@ const Questionnaire = ({ defaultValues }) => {
 
   //get questions
   const getFormProperties = () => {
-    Api.get(`/questionnaire/form-properties`, {}).then((res) => {
+    Api.get(`/questionnaire/form-properties`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }).then((res) => {
       if (defaultValues) {
         setIsReadOnly(true);
         const formWithDefaultValues = addDefaultValuesToForm(

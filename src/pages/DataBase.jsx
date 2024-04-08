@@ -57,7 +57,7 @@ const DataBase = ({ data }) => {
         База анкет
       </Typography>
 
-      <Paper
+      {/* <Paper
         component="form"
         onSubmit={handleSearchSubmit}
         sx={{
@@ -95,12 +95,27 @@ const DataBase = ({ data }) => {
         <Button type="submit" sx={{ width: "180px" }}>
           Поиск
         </Button>
-      </Paper>
-      <Paper sx={{ width: "100%", overflow: "hidden", px: 2, pt: 2 }}>
+      </Paper> */}
+      <Paper sx={{ width: "100%", overflow: "hidden", px: 2, pt: 2, pb: 2 }}>
         <Button component={RouterLink} to="create">
           Добавить анкету
         </Button>
-        <TableContainer>
+        <Typography
+          color="text.secondary"
+          sx={{
+            width: "fit-content",
+            height: "fit-content",
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            margin: "auto",
+          }}
+        >
+          Раздел в разработке
+        </Typography>
+        {/* <TableContainer>
           <Table aria-label="table">
             <TableHead>
               <TableRow>
@@ -178,7 +193,7 @@ const DataBase = ({ data }) => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        /> */}
       </Paper>
     </Container>
   );

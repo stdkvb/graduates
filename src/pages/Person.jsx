@@ -15,9 +15,7 @@ const Person = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const getPersonData = () => {
-    Api.get(`/questionnaire/${personId}`, {
-      baseURL: "https://support.wptt.ru/api",
-    })
+    Api.get(`/questionnaire/${personId}`, {})
       .then((res) => {
         setLoading(false);
         setPersonData(res.data.data);

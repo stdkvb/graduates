@@ -322,9 +322,15 @@ const Questionnaire = ({ defaultValues }) => {
                 {readOnly ? "Редактировать" : "Сохранить"}
               </Button>
             ) : (
-              <Button type="submit" variant="contained" sx={{ width: "180px" }}>
-                Сохранить
-              </Button>
+              !defaultValues && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ width: "180px" }}
+                >
+                  Сохранить
+                </Button>
+              )
             )}
           </Box>
           <Popup isPopupOpen={isSuccess}>

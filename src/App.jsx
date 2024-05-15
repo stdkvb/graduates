@@ -25,7 +25,6 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [error, setError] = useState();
   const { user, setUser } = useContext(UserContext);
-  const [data, setData] = useState();
 
   //get user info
   const getUserInfo = (token) => {
@@ -37,46 +36,13 @@ function App() {
       .then((res) => {
         setUser(res.data.data);
         setLoggedIn(true);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-
-    Api.get(`/questionnaire/get-list`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => {
-        setData(res.data.data);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      })
-      .finally(() => {
         setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
       });
   };
   useEffect(getUserInfo, []);
-
-  //get data
-  const getData = (params) => {
-    Api.get(`/questionnaire/get-list?` + `${new URLSearchParams(params)}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => {
-        setData(res.data.data);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-  useEffect(getData, []);
 
   //login submit
   const logIn = ({ login, password }) => {
@@ -128,7 +94,11 @@ function App() {
           <Route
             index
             path="/"
-            element={<DataBase data={data} getData={getData} />}
+            element={<DataBase title={"База анкет"} my={false} />}
+          />
+          <Route
+            path="/my"
+            element={<DataBase title={"Мои анкеты"} my={true} />}
           />
           <Route path="profile" element={<Profile />} />
           <Route path="help" element={<Help />} />

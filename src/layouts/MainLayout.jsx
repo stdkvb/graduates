@@ -217,6 +217,18 @@ const MainLayout = ({ onLogout }) => {
               <ListItem disablePadding>
                 <ListItemButton
                   component={RouterLink}
+                  to="/my"
+                  selected={activateMenuItem("/my")}
+                >
+                  <ListItemIcon>
+                    <FolderIcon color={activateMenuItem("/my") && "primary"} />
+                  </ListItemIcon>
+                  <ListItemText primary="Мои анкеты" />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  component={RouterLink}
                   to="/materials"
                   selected={activateMenuItem("/materials")}
                 >

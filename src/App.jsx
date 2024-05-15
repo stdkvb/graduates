@@ -40,6 +40,9 @@ function App() {
       })
       .catch((error) => {
         console.log(error.response.data);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
   useEffect(getUserInfo, []);
@@ -49,9 +52,10 @@ function App() {
     Api.post(`auth/login`, { login, password })
       .then((res) => {
         localStorage.setItem("token", res.data.token);
-        getData();
+        getUserInfo();
         setLoggedIn(true);
         setError();
+        navigate("/");
       })
       .catch((error) => setError(error.response.data));
   };

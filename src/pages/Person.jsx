@@ -15,7 +15,11 @@ const Person = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const getPersonData = () => {
-    Api.get(`/questionnaire/${personId}`, {})
+    Api.get(`/questionnaire/${personId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
       .then((res) => {
         setLoading(false);
         setPersonData(res.data.data);

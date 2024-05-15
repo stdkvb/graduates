@@ -35,6 +35,7 @@ import HelpCenterIcon from "@mui/icons-material/HelpCenter";
 
 import bashkortostanLogo from "../assets/images/bashkortostan.svg";
 import ornament from "../assets/images/ornament.svg";
+import timchenko from "../assets/images/timchenko.svg";
 
 import Header from "../components/Header";
 
@@ -164,6 +165,17 @@ const MainLayout = ({ onLogout }) => {
             }}
           >
             <List>
+              <Box
+                component="img"
+                alt="logo"
+                src={bashkortostanLogo}
+                sx={{
+                  width: "70px",
+                  ml: "50%",
+                  mb: 1,
+                  transform: "translateX(-50%)",
+                }}
+              />
               <ListItem disablePadding>
                 <ListItemButton
                   component={RouterLink}
@@ -330,14 +342,22 @@ const MainLayout = ({ onLogout }) => {
                   </AccordionDetails>
                 </Accordion>
               </ListItem>
+              <Stack sx={{ ml: 2, mt: 2 }}>
+                <Typography color="text.secondary" sx={{ fontSize: "12px" }}>
+                  При поддержке
+                </Typography>
+                <Box
+                  component="img"
+                  alt="logo"
+                  src={timchenko}
+                  sx={{
+                    width: "103px",
+                    mt: 1,
+                  }}
+                />
+              </Stack>
             </List>
             <Stack>
-              <Box
-                component="img"
-                alt="logo"
-                src={bashkortostanLogo}
-                sx={{ width: "70px", ml: 2, mb: 3 }}
-              />
               <ListItemButton onClick={onLogout}>
                 <ListItemIcon>
                   <LogoutIcon />

@@ -21,14 +21,19 @@ import SearchIcon from "@mui/icons-material/Search";
 const columns = [
   "№",
   "ФИО выпускника",
-  "Год выпуска",
-  "Дата корректировки отчета",
+  "Дата рождения",
   "Телефон",
+  "Адрес проживания",
 ];
 
-const DataBase = ({ data }) => {
+const DataBase = ({ data, getData }) => {
   //search
-  const handleSearchSubmit = () => {};
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const params = new FormData(event.currentTarget);
+    console.log(getData);
+    getData(params);
+  };
 
   //pagination
   const [page, setPage] = useState(0);
@@ -56,8 +61,7 @@ const DataBase = ({ data }) => {
       <Typography component="h1" variant="h4">
         База анкет
       </Typography>
-
-      {/* <Paper
+      <Paper
         component="form"
         onSubmit={handleSearchSubmit}
         sx={{
@@ -79,10 +83,9 @@ const DataBase = ({ data }) => {
             sx={{ position: "absolute", left: "10px", top: "10px" }}
           />
           <TextField
-            name="search"
+            name="fio"
             size="small"
             fullWidth
-            required={true}
             label="Поиск выпускника"
             InputLabelProps={{ shrink: true }}
             inputProps={{
@@ -95,27 +98,12 @@ const DataBase = ({ data }) => {
         <Button type="submit" sx={{ width: "180px" }}>
           Поиск
         </Button>
-      </Paper> */}
+      </Paper>
       <Paper sx={{ width: "100%", overflow: "hidden", px: 2, pt: 2, pb: 2 }}>
         <Button component={RouterLink} to="create">
           Добавить анкету
         </Button>
-        <Typography
-          color="text.secondary"
-          sx={{
-            width: "fit-content",
-            height: "fit-content",
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            margin: "auto",
-          }}
-        >
-          Раздел в разработке
-        </Typography>
-        {/* <TableContainer>
+        <TableContainer>
           <Table aria-label="table">
             <TableHead>
               <TableRow>
@@ -166,7 +154,7 @@ const DataBase = ({ data }) => {
                             fontSize: "16px",
                           }}
                         >
-                          {row.description}
+                          {row.birthDate}
                         </TableCell>
                         <TableCell
                           sx={{
@@ -175,9 +163,11 @@ const DataBase = ({ data }) => {
                             minWidth: "150px",
                           }}
                         >
-                          {row.date}
+                          {row.phone}
                         </TableCell>
-                        <TableCell sx={{ minWidth: "200px" }}></TableCell>
+                        <TableCell sx={{ minWidth: "200px" }}>
+                          {row.institution}
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -193,7 +183,7 @@ const DataBase = ({ data }) => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        /> */}
+        />
       </Paper>
     </Container>
   );

@@ -27,9 +27,8 @@ function App() {
   const { user, setUser } = useContext(UserContext);
   const [data, setData] = useState();
 
-  //get data
-  const getData = (token) => {
-    //get user info
+  //get user info
+  const getUserInfo = (token) => {
     Api.get(`user`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -42,7 +41,27 @@ function App() {
       .catch((error) => {
         console.log(error.response.data);
       });
-    Api.get(`/material/get-list`, {
+
+    Api.get(`/questionnaire/get-list`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    })
+      .then((res) => {
+        setData(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  useEffect(getUserInfo, []);
+
+  //get data
+  const getData = (params) => {
+    Api.get(`/questionnaire/get-list?` + `${new URLSearchParams(params)}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -106,7 +125,11 @@ function App() {
         />
       ) : loggedIn ? (
         <Route path="/" element={<MainLayout onLogout={logOut} />}>
-          <Route index path="/" element={<DataBase data={data} />} />
+          <Route
+            index
+            path="/"
+            element={<DataBase data={data} getData={getData} />}
+          />
           <Route path="profile" element={<Profile />} />
           <Route path="help" element={<Help />} />
           <Route path="create" element={<CreatePerson />} />

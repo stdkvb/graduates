@@ -27,12 +27,12 @@ const Help = () => {
 
   //form submit
   const handleSubmit = (e) => {
-    setQuestionValue([...questionValue]);
     const formData = Object.fromEntries(new FormData(e.currentTarget));
     e.preventDefault();
     if (e.target.checkValidity()) {
       Api.post(`form/help`, formData)
         .then(() => {
+          setQuestionValue([...questionValue]);
           setIsSuccess(true);
         })
         .catch((error) => console.log(error));

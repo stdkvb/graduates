@@ -190,7 +190,7 @@ const Chat = () => {
     })
       .then((res) => {
         const newMessages = Object.entries(res.data.data);
-        const mergedArray = mergeArrays(messages, newMessages);
+        const mergedArray = mergeArrays(newMessages, messages);
         setMessages([...mergedArray]);
       })
       .catch((error) => console.log(error.response.data));
@@ -211,7 +211,10 @@ const Chat = () => {
 
   //send message
   const [messageText, setMessageText] = useState("");
+  const [messageSent, setMessageSent] = useState(true);
+
   const sendMessage = (e) => {
+    setMessageSent(false);
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
@@ -227,6 +230,7 @@ const Chat = () => {
       },
     })
       .then(() => {
+        setMessageSent(true);
         setMessageText("");
         setSelectedFiles([]);
         refreshMessages();
@@ -502,9 +506,13 @@ const Chat = () => {
                 <Button
                   sx={{ width: "180px" }}
                   type="submit"
-                  disabled={messageText == "" && selectedFiles.length == 0}
+                  disabled={
+                    messageText == "" &&
+                    selectedFiles.length == 0 &&
+                    messageSent
+                  }
                 >
-                  Отправить
+                  {messageSent ? "Отправить" : <CircularProgress size={20} />}
                 </Button>
               </Box>
             </Box>

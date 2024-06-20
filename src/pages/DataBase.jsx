@@ -7,18 +7,20 @@ import {
   Typography,
   Button,
   Link,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TextField,
 } from "@mui/material";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import TextField from "@mui/material/TextField";
+
 import SearchIcon from "@mui/icons-material/Search";
 
 import Api from "../utils/api";
+import Search from "../components/Search";
 
 const columns = [
   "№",
@@ -55,13 +57,6 @@ const DataBase = ({ title, my }) => {
   };
   useEffect(getData, [my]);
 
-  //search
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    const params = new FormData(event.currentTarget);
-    getData(params);
-  };
-
   //pagination
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -88,46 +83,9 @@ const DataBase = ({ title, my }) => {
       <Typography component="h1" variant="h4">
         {title}
       </Typography>
-      <Paper
-        component="form"
-        onSubmit={handleSearchSubmit}
-        sx={{
-          width: "100%",
-          overflow: "hidden",
-          p: 2,
-          display: "flex",
-          gap: 2,
-          alignItems: "center",
-        }}
-      >
-        <Stack
-          sx={{
-            position: "relative",
-            width: "100%",
-          }}
-        >
-          <SearchIcon
-            sx={{ position: "absolute", left: "10px", top: "10px" }}
-          />
-          <TextField
-            name="fio"
-            size="small"
-            fullWidth
-            label="Поиск выпускника"
-            InputLabelProps={{ shrink: true }}
-            inputProps={{
-              style: {
-                paddingLeft: 40,
-              },
-            }}
-          />
-        </Stack>
-        <Button type="submit" sx={{ width: "180px" }}>
-          Поиск
-        </Button>
-      </Paper>
+      <Search onSubmit={getData} />
       <Paper sx={{ width: "100%", overflow: "hidden", px: 2, pt: 2, pb: 2 }}>
-        <Button component={RouterLink} to="create">
+        <Button component={RouterLink} to="/create">
           Добавить анкету
         </Button>
 

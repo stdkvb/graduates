@@ -15,6 +15,7 @@ const CustomSelect = ({
   defaultValue,
   readOnly,
   required,
+  size,
 }) => {
   const [checkedOptions, setCheckedOptions] = React.useState(
     readOnly ? [defaultValue] : []
@@ -31,65 +32,61 @@ const CustomSelect = ({
   };
 
   return (
-    <div>
-      <FormControl
-        sx={{ width: "100%" }}
-        required={readOnly ? false : required}
+    <FormControl sx={{ width: "100%" }} required={readOnly ? false : required}>
+      <InputLabel
+        id="demo-multiple-checkbox-label"
+        shrink
+        sx={{ background: "white" }}
       >
-        <InputLabel
-          id="demo-multiple-checkbox-label"
-          shrink
-          sx={{ background: "white" }}
-        >
-          {label}
-        </InputLabel>
-        <Select
-          labelId="demo-multiple-checkbox-label"
-          id="demo-multiple-checkbox"
-          multiple={multiple}
-          value={checkedOptions}
-          onChange={handleChange}
-          name={name}
-          input={
-            <OutlinedInput
-              label={label}
-              sx={{
-                [`& .MuiInputBase-input`]: {
-                  whiteSpace: "break-spaces !important",
-                },
-              }}
-            />
-          }
-          renderValue={(selected) => selected.join(", ")}
-          MenuProps={{
-            PaperProps: {
-              style: {
-                maxHeight: 48 * 4.5 + 8,
-                width: 250,
+        {label}
+      </InputLabel>
+      <Select
+        labelId="demo-multiple-checkbox-label"
+        id="demo-multiple-checkbox"
+        multiple={multiple}
+        value={checkedOptions}
+        onChange={handleChange}
+        name={name}
+        input={
+          <OutlinedInput
+            size={size}
+            label={label}
+            sx={{
+              [`& .MuiInputBase-input`]: {
+                whiteSpace: "break-spaces !important",
               },
+            }}
+          />
+        }
+        renderValue={(selected) => selected.join(", ")}
+        MenuProps={{
+          PaperProps: {
+            style: {
+              maxHeight: 48 * 4.5 + 8,
+              width: 250,
             },
-          }}
-          disabled={readOnly}
-        >
-          {options.map((option) => (
-            <MenuItem
-              key={option}
-              value={option}
-              sx={
-                multiple
-                  ? { p: 0, whiteSpace: "break-spaces" }
-                  : { whiteSpace: "break-spaces" }
-              }
-            >
-              {multiple && (
-                <Checkbox checked={checkedOptions.indexOf(option) > -1} />
-              )}
-              <ListItemText primary={option} sx={{ pr: 1 }} />
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-    </div>
+          },
+        }}
+        disabled={readOnly}
+      >
+        {options.map((option) => (
+          <MenuItem
+            key={option}
+            value={option}
+            sx={
+              multiple
+                ? { p: 0, whiteSpace: "break-spaces" }
+                : { whiteSpace: "break-spaces" }
+            }
+          >
+            {multiple && (
+              <Checkbox checked={checkedOptions.indexOf(option) > -1} />
+            )}
+            <ListItemText primary={option} sx={{ pr: 1 }} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   );
 };
 

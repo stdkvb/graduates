@@ -76,7 +76,7 @@ function stringAvatar(name, lastName) {
 
 const MainLayout = ({ onLogout }) => {
   //min app width
-  const requiredWidth = useMediaQuery("(min-width:1200px)");
+  const requiredWidth = useMediaQuery("(min-width:0px)");
 
   //current user
   const user = useContext(UserContext).user;
@@ -134,7 +134,7 @@ const MainLayout = ({ onLogout }) => {
 
     return () => clearInterval(interval);
   };
-  useEffect(autoRefreshChatList, []);
+  // useEffect(autoRefreshChatList, []);
 
   if (requiredWidth)
     return (

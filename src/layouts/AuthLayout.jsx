@@ -11,7 +11,7 @@ import Footer from "../components/Footer";
 
 const AuthLayout = () => {
   //min app width
-  const requiredWidth = useMediaQuery("(min-width:1200px)");
+  const requiredWidth = useMediaQuery("(min-width:0px)");
 
   return (
     <>

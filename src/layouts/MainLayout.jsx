@@ -136,7 +136,7 @@ const MainLayout = ({ onLogout }) => {
 
     return () => clearInterval(interval);
   };
-  useEffect(autoRefreshChatList, []);
+  // useEffect(autoRefreshChatList, []);
 
   if (requiredWidth)
     return (

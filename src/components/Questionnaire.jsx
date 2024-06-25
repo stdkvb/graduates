@@ -345,7 +345,7 @@ const Questionnaire = ({ defaultValues }) => {
                 {error}
               </Typography>
             )}
-            {defaultValues && defaultValues.my ? (
+            {defaultValues ? (
               <Button
                 type={readOnly ? "button" : "submit"}
                 variant="contained"

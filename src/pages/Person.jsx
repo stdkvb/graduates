@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Container, Paper, Typography, CircularProgress } from "@mui/material";
 
 import Questionnaire from "../components/Questionnaire";
+import ChangeHistory from "../components/ChangeHistory";
 
 import Api from "../utils/api";
 
@@ -64,6 +65,7 @@ const Person = () => {
               Дата последнего редактирования: {personData.changeDate}
             </Typography>
             <Questionnaire defaultValues={personData} />
+            <ChangeHistory personId={personId} />
           </Paper>
         )}
       </Container>

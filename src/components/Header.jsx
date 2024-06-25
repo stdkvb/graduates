@@ -1,7 +1,4 @@
-import { Avatar, Box, Stack, Divider, Button } from "@mui/material";
-import Drawer from "@mui/material/Drawer";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
+import { AppBar, Box, Toolbar, Divider } from "@mui/material";
 
 import familyLogoWhite from "../assets/images/familyWhite.svg";
 import centerLogoWhite from "../assets/images/centerWhite.svg";

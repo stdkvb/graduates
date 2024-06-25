@@ -1,11 +1,7 @@
-import { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import { Button, Link } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Box, Button, Link, Typography } from "@mui/material";
 
 import TextInput from "../components/TextInput";
 import PasswordInput from "../components/PasswordInput";

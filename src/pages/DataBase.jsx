@@ -3,7 +3,6 @@ import { Link as RouterLink } from "react-router-dom";
 import {
   Container,
   Paper,
-  Stack,
   Typography,
   Button,
   Link,
@@ -14,10 +13,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
 } from "@mui/material";
-
-import SearchIcon from "@mui/icons-material/Search";
 
 import Api from "../utils/api";
 import Search from "../components/Search";

@@ -1,22 +1,17 @@
+import { useContext, useState } from "react";
 import {
   Container,
   Paper,
-  Stack,
   Typography,
   Button,
   Grid,
+  IconButton,
 } from "@mui/material";
-import { useContext, useState } from "react";
-import IconButton from "@mui/material/IconButton";
-
 import CloseIcon from "@mui/icons-material/Close";
-
 import { UserContext } from "../utils/context";
-
 import TextInput from "../components/TextInput";
 import PhoneInput from "../components/PhoneInput";
 import Popup from "../components/Popup";
-
 import Api from "../utils/api";
 
 const Help = () => {

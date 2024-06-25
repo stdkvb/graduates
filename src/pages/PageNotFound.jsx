@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import { Button, Stack, Box } from "@mui/material";
+import { Button, Typography, Box } from "@mui/material";
 
 import Footer from "../components/Footer";
 

@@ -1,7 +1,5 @@
-import { useContext, useState, useEffect } from "react";
-import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-
+import { useState } from "react";
+import { Button, Grid, Paper, IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 import PasswordInput from "./PasswordInput";

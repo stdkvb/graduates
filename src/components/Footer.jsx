@@ -1,7 +1,4 @@
-import { Outlet } from "react-router-dom";
-import { Container, Link, Stack, Divider } from "@mui/material";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+import { Box, Link, Typography } from "@mui/material";
 
 const Footer = () => {
   return (

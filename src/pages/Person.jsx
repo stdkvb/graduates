@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Container, Paper, Typography, Button } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Container, Paper, Typography, CircularProgress } from "@mui/material";
 
 import Questionnaire from "../components/Questionnaire";
 

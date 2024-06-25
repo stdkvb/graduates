@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Container, Stack, Divider, Typography } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Container, Stack, Divider, Typography, Box } from "@mui/material";
 
 import bashkortostanLogo from "../assets/images/bashkortostan.svg";
 import familyLogo from "../assets/images/family.svg";

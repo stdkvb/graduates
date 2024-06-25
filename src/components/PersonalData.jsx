@@ -1,11 +1,14 @@
 import { useContext, useState } from "react";
-import { Button, Grid, Paper, Stack, Typography } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-
+import {
+  Button,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+  IconButton,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-
 import { UserContext } from "../utils/context";
-
 import TextInput from "./TextInput";
 import PhoneInput from "./PhoneInput";
 import Popup from "./Popup";

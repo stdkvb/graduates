@@ -1,25 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Container from "@mui/material/Container";
-import Paper from "@mui/material/Paper";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import Divider from "@mui/material/Divider";
-import Avatar from "@mui/material/Avatar";
-import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
-import InputBase from "@mui/material/InputBase";
-import IconButton from "@mui/material/IconButton";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  Container,
+  Paper,
+  Box,
+  Typography,
+  Button,
+  Divider,
+  Avatar,
+  Chip,
+  Stack,
+  InputBase,
+  IconButton,
+  CircularProgress,
+  Link,
+} from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
-
 import FileInput from "../components/FileInput";
-
 import Api from "../utils/api";
-import { Link } from "@mui/material";
 
 //merging messages
 const mergeArrays = (array1, array2) => {

@@ -6,25 +6,27 @@ import {
   useLocation,
 } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Avatar, Box, Stack, Divider, Button, Container } from "@mui/material";
-import Drawer from "@mui/material/Drawer";
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import List from "@mui/material/List";
-import Typography from "@mui/material/Typography";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-
-import Badge from "@mui/material/Badge";
-
+import {
+  Badge,
+  Avatar,
+  Box,
+  Stack,
+  Container,
+  Drawer,
+  Toolbar,
+  List,
+  Typography,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
+  TextField,
+  Autocomplete,
+} from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import DescriptionIcon from "@mui/icons-material/Description";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -134,7 +136,7 @@ const MainLayout = ({ onLogout }) => {
 
     return () => clearInterval(interval);
   };
-  // useEffect(autoRefreshChatList, []);
+  useEffect(autoRefreshChatList, []);
 
   if (requiredWidth)
     return (

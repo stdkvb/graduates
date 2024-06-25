@@ -17,7 +17,6 @@ const Search = ({ onSubmit }) => {
       },
     })
       .then((res) => {
-        console.log(res.data.data);
         setFilter(res.data.data);
       })
       .catch((error) => {

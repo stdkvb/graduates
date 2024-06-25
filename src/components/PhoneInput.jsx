@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextField } from "@mui/material";
 import InputMask from "react-input-mask";
 
-const PhoneInput = ({ name, label, defaultValue, readOnly, required }) => {
+const PhoneInput = ({ name, label, defaultValue = "", readOnly, required }) => {
   const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
 
   const phoneValidator = (value) => {
     if (

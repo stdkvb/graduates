@@ -4,13 +4,13 @@ import { TextField } from "@mui/material";
 const TextInput = ({
   name,
   label,
-  defaultValue,
+  defaultValue = "",
   validator,
   readOnly,
   multiline,
   required,
 }) => {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue);
   const [error, setError] = useState(false);
 
   useEffect(() => {

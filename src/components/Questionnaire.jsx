@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Button, Grid, Box } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import CircularProgress from "@mui/material/CircularProgress";
+import { IconButton, CircularProgress } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -18,16 +17,21 @@ import Api from "../utils/api";
 const Questionnaire = ({ defaultValues }) => {
   const navigate = useNavigate();
   const [questionnaire, setQuestionnaire] = useState();
+  const [relativeFieldsTemplate, setRelativeFieldsTemplate] = useState([]);
+  const [assistanceFieldsTemplate, setAssistanceFieldsTemplate] = useState([]);
   const [error, setError] = useState();
   const [loading, setLoading] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [readOnly, setIsReadOnly] = useState(false);
 
-  function addDefaultValuesToForm(questionnaire, defaultValues) {
+  function addDefaultValuesToForm(
+    questionnaire,
+    defaultValues,
+    relativeTemplate,
+    assistanceTemplate
+  ) {
     // Create a new array to store the modified questionnaire
-    const newQuestionnaire = [];
-
-    questionnaire.forEach((group, groupIndex) => {
+    const newQuestionnaire = questionnaire.reduce((acc, group) => {
       // Check if group is an array
       if (Array.isArray(group)) {
         // Clone the group and fill fields with default values
@@ -37,44 +41,53 @@ const Questionnaire = ({ defaultValues }) => {
             field.defaultValue = defaultValues[field.name];
           }
         });
-        newQuestionnaire.push(newGroup);
-      } else {
-        console.log("Group at index", groupIndex, "is not an array:", group);
-        // If group is not an array, push it directly to the new questionnaire
-        newQuestionnaire.push(group);
-      }
-    });
 
-    // Add relative fields with default values
-    if (defaultValues.relatives.length > 0) {
-      const relativeFieldsTemplate = JSON.parse(
-        JSON.stringify(questionnaire[3])
-      ); // Clone the relative fields template
-      let processedRelatives = 0;
-
-      defaultValues.relatives.forEach((relativeValues) => {
-        const relativeFields = relativeFieldsTemplate.map((field) => {
-          const defaultValue =
-            relativeValues[field.name.replace(/\[\]/g, "")] || "";
-          return { ...field, defaultValue };
-        });
-
-        // Insert relative fields into the new questionnaire array after the template
-        newQuestionnaire.splice(4, 0, relativeFields);
-        processedRelatives++;
-      });
-
-      // Check if the number of processed relatives matches the expected length
-      if (processedRelatives !== defaultValues.relatives.length) {
-        console.error(
-          "Error: Processed relatives count does not match expected length."
+        // Check if any field in newGroup has defaultValue defined
+        const hasDefaultValue = newGroup.some((field) =>
+          field.hasOwnProperty("defaultValue")
         );
+
+        if (hasDefaultValue) {
+          acc.push(newGroup);
+        }
+      } else {
+        // If group is not an array, push it directly to the new questionnaire
+        acc.push(group);
       }
 
-      // Remove the template from the new questionnaire array
-      newQuestionnaire.splice(3, 1);
-    }
+      // Check if the current group matches relativeTemplate or assistanceTemplate
+      if (group === relativeTemplate || group === assistanceTemplate) {
+        // Add relative or assistance fields with default values
+        const template =
+          group === relativeTemplate ? relativeTemplate : assistanceTemplate;
+        const data =
+          group === relativeTemplate
+            ? defaultValues.relatives
+            : defaultValues.assistanceProvided;
 
+        if (data && data.length > 0) {
+          data.forEach((values) => {
+            const fields = template.map((field) => ({
+              ...field,
+              defaultValue: values[field.name.replace(/\[\]/g, "")] || "",
+            }));
+
+            // Check if any field in fields has defaultValue defined
+            const hasDefaultValue = fields.some((field) =>
+              field.hasOwnProperty("defaultValue")
+            );
+
+            if (hasDefaultValue) {
+              acc.push(fields);
+            }
+          });
+        }
+      }
+
+      return acc;
+    }, []);
+
+    // console.log(newQuestionnaire);
     return newQuestionnaire;
   }
 
@@ -85,53 +98,68 @@ const Questionnaire = ({ defaultValues }) => {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     }).then((res) => {
+      const formProperties = res.data.data;
+
+      const relativeTemplate = formProperties[3];
+      const assistanceTemplate = formProperties[5];
+
+      setRelativeFieldsTemplate(relativeTemplate);
+      setAssistanceFieldsTemplate(assistanceTemplate);
+
       if (defaultValues) {
         setIsReadOnly(true);
+
         const formWithDefaultValues = addDefaultValuesToForm(
-          res.data.data,
-          defaultValues
+          formProperties,
+          defaultValues,
+          relativeTemplate,
+          assistanceTemplate
         );
         setQuestionnaire(formWithDefaultValues);
       } else {
-        setQuestionnaire(res.data.data);
+        setQuestionnaire(formProperties);
       }
 
       setLoading(false);
     });
-    // .catch((error) => setError(error.response.data));
   };
   useEffect(getFormProperties, []);
 
   //add relatives
   const addRelatives = () => {
-    // Assuming questionnaire is already initialized and not null
-    const relativeFieldsTemplate = JSON.parse(JSON.stringify(questionnaire[3])); // Clone the relative fields template
+    setQuestionnaire((prevQuestionnaire) => {
+      console.log(prevQuestionnaire);
+      const newRelativeFields = relativeFieldsTemplate.map((field) => {
+        const { defaultValue, ...rest } = field;
+        return { ...rest };
+      });
 
-    const newRelativeFields = relativeFieldsTemplate.map((field) => {
-      return { ...field };
+      const updatedQuestionnaire = [...prevQuestionnaire];
+
+      updatedQuestionnaire.splice(3, 0, newRelativeFields);
+
+      return updatedQuestionnaire;
     });
+  };
 
-    // Create a new copy of the questionnaire array
-    const updatedQuestionnaire = [...questionnaire];
+  //add assistance
+  const addAssistance = () => {
+    setQuestionnaire((prevQuestionnaire) => {
+      const newAssistanceFields = assistanceFieldsTemplate.map((field) => {
+        const { defaultValue, ...rest } = field;
+        return { ...rest };
+      });
 
-    // Insert newRelativeFields at the appropriate index
-    updatedQuestionnaire.splice(-3, 0, newRelativeFields);
+      const updatedQuestionnaire = [...prevQuestionnaire];
 
-    // Remove defaultValue from the last added relative
-    if (updatedQuestionnaire.length > 0) {
-      const lastRelativeIndex = updatedQuestionnaire.findIndex(
-        (group) => Array.isArray(group) && group.includes(newRelativeFields[0])
+      updatedQuestionnaire.splice(
+        updatedQuestionnaire.length - 2,
+        0,
+        newAssistanceFields
       );
-      if (lastRelativeIndex !== -1) {
-        updatedQuestionnaire[lastRelativeIndex].forEach((field) => {
-          delete field.defaultValue;
-        });
-      }
-    }
-    console.log(updatedQuestionnaire);
-
-    // Update the state with the modified questionnaire
-    setQuestionnaire(updatedQuestionnaire);
+      console.log(updatedQuestionnaire);
+      return updatedQuestionnaire;
+    });
   };
 
   //add/delete files
@@ -152,7 +180,7 @@ const Questionnaire = ({ defaultValues }) => {
     setSelectedFiles(files);
 
     setDeletedFiles(deletedFiles.concat(fileId));
-    console.log(deletedFiles.concat(fileId));
+    // console.log(deletedFiles.concat(fileId));
   };
 
   //form submit
@@ -198,7 +226,7 @@ const Questionnaire = ({ defaultValues }) => {
         />
       ) : (
         <>
-          <Box component="form" noValidate onSubmit={handleSubmit}>
+          <Box component="form" onSubmit={handleSubmit}>
             {questionnaire.map((group, i) => {
               return (
                 <Grid
@@ -291,11 +319,15 @@ const Questionnaire = ({ defaultValues }) => {
                       );
                     }
                   })}
-                  {i == questionnaire.length - 4 && !readOnly && (
-                    <Grid item xs={12}>
+                  {i == questionnaire.length - 1 && !readOnly && (
+                    <Grid item xs={12} sx={{ display: "flex", gap: 2 }}>
                       <Button onClick={addRelatives} variant="text">
                         <AddIcon sx={{ mr: 1 }} />
                         Добавить родственника
+                      </Button>
+                      <Button onClick={addAssistance} variant="text">
+                        <AddIcon sx={{ mr: 1 }} />
+                        Добавить оказанную помощь
                       </Button>
                     </Grid>
                   )}

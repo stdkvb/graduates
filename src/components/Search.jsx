@@ -75,8 +75,9 @@ const Search = ({ onSubmit }) => {
       </Stack>
 
       {filter &&
-        filter.map((item) => (
+        filter.map((item, i) => (
           <CustomSelect
+            key={i}
             label={item.title}
             name={item.name}
             options={item.value}

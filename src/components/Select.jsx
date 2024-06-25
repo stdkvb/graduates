@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -17,18 +17,19 @@ const CustomSelect = ({
   required,
   size,
 }) => {
-  const [checkedOptions, setCheckedOptions] = React.useState(
+  const [checkedOptions, setCheckedOptions] = useState(
     readOnly ? [defaultValue] : []
   );
+
+  useEffect(() => {
+    setCheckedOptions([defaultValue]);
+  }, [defaultValue]);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setCheckedOptions(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    setCheckedOptions(typeof value === "string" ? value.split(",") : value);
   };
 
   return (

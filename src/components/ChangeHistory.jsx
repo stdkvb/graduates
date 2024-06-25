@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
 import {
-  Container,
-  Paper,
   Typography,
-  Button,
-  Link,
   Table,
   TableBody,
   TableCell,
@@ -16,7 +11,6 @@ import {
 } from "@mui/material";
 
 import Api from "../utils/api";
-import Search from "../components/Search";
 
 const columns = ["№", "Дата и время", "ФИО сотрудника", "Действие"];
 

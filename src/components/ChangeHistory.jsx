@@ -8,13 +8,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Box,
 } from "@mui/material";
 
 import Api from "../utils/api";
 
 const columns = ["№", "Дата и время", "ФИО сотрудника", "Действие"];
 
-const ChangeHistory = ({ personId }) => {
+const ChangesHistory = ({ personId }) => {
   const [data, setData] = useState();
   const [error, setError] = useState();
 
@@ -50,7 +51,7 @@ const ChangeHistory = ({ personId }) => {
   };
 
   return (
-    <div>
+    <Box sx={{ maxWidth: "1054px" }}>
       <Typography variant="h5">История изменений</Typography>
       {data && (
         <>
@@ -133,8 +134,8 @@ const ChangeHistory = ({ personId }) => {
         </>
       )}
       {error && <Typography sx={{ pt: 2 }}>{error}</Typography>}
-    </div>
+    </Box>
   );
 };
 
-export default ChangeHistory;
+export default ChangesHistory;

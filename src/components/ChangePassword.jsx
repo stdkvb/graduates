@@ -29,7 +29,11 @@ const ChangePassword = () => {
         setError("Введеные пароли не совпадают");
       } else {
         setReset(true);
-        Api.post(`user/change-password`, formData)
+        Api.post(`user/change-password`, formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
           .then(() => {
             setIsSuccess(true);
             setError();

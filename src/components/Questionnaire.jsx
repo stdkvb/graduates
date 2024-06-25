@@ -208,7 +208,10 @@ const Questionnaire = ({ defaultValues }) => {
     }
 
     Api.post(`questionnaire/${defaultValues ? "change" : "create"}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     })
       .then((res) => {
         setIsSuccess(true);
